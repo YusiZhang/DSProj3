@@ -1,6 +1,10 @@
 package communication;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.Socket;
 
 /**
  * Message used between nodes
@@ -37,6 +41,26 @@ public class Message implements Serializable{
 		this.content = content;
 	}
 	
+	/*
+	 * send this message to remote host
+	 * @param resuedSocket
+	 */
+	public void send(Socket soc) throws Exception{
+		Socket socket = soc;
+		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+		out.writeObject(this);
+		out.flush();
+	}
 	
+	/*
+	 * receive message from remote host
+	 */
+	public static Message receive(Socket soc) throws ClassNotFoundException, Exception {
+		Message msg = null;
+		Socket socket = soc;
+		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+		msg = (Message)in.readObject();
+		return msg;
+	}
 
 }
