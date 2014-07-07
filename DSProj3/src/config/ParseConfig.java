@@ -1,7 +1,64 @@
 package config;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.HashMap;
+
 /*
  * 1. parse config file 
  */
 public class ParseConfig {
+	
+	//the port the master listening on
+	public static int MasterMainPort;
+	//the ip address of master
+	public static String MasterIP;
+	//master's start port of port pool
+	public static int StartPort;
+	//master's end port of port pool
+	public static int EndPort;
+	
+	
+	public static String FS_LOC = "dfs/";
+	public static String HTTP_PREFIX = "http://";
+	
+	/*
+	 * Parse config file
+	 */
+	public ParseConfig(String configName) throws Exception {
+		BufferedReader reader = new BufferedReader(new FileReader(configName));
+		HashMap<String,String> args = new HashMap<String, String>();
+		String line;
+		
+		while((line = reader.readLine()) != null) {
+			System.out.println(line);
+			int split = line.indexOf("=");
+			if(split != -1) {
+				//put key-value pair from config file to args
+				args.put(line.substring(0,split).trim(), line.substring(split+1,line.length()-1).trim());
+			}
+		}
+		
+		reader.close();
+		parseArgs(args);
+	}
 
+	private void parseArgs(HashMap<String, String> args) {
+		try {
+			MasterMainPort = Integer.parseInt(args.get("MasterMainPort"));
+			MasterIP = args.get("MasterIP");
+			StartPort = Integer.parseInt(args.get("StartPort"));
+			EndPort = Integer.parseInt(args.get("EndPort"));
+			
+			if(MasterIP == null) {
+				throw new Exception();
+			}
+			
+		} catch (Exception e) {
+			System.out.println("Args are missing or in wrong format" + e.toString());
+		}
+		
+	}
+	
 }
