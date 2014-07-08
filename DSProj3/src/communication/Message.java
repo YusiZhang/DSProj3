@@ -12,8 +12,8 @@ import java.net.Socket;
 public class Message implements Serializable{
 	public static enum MSG_TYPE {
 	
-		FILE_PUT_REQ, FILE_PUT_DONE, FILE_PUT_FAIL,
-		FILE_GET_REQ, FILE_GET_DONE, FILE_GET_FAIL,
+		FILE_PUT_REQ, FILE_PUT_ACK,FILE_PUT_DONE, FILE_PUT_FAIL,
+		FILE_GET_REQ, FILE_GET_ACK,FILE_GET_DONE, FILE_GET_FAIL,
 		
 	}
 	

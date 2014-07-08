@@ -17,7 +17,14 @@ import config.ParseConfig;
  * 3. get file
  */
 public class ClientMain {
+	public static enum CMD {
+		
+		put
+		
+	}
 	public static void main(String[] args) {
+		
+		CMD cmd_type = null;
 		
 		//connect to master.
 		Socket socket = null;
@@ -32,9 +39,10 @@ public class ClientMain {
 		Scanner scanner = new Scanner(new InputStreamReader(System.in));
 		System.out.println("Enter your cmd ");
 		String cmd = scanner.nextLine();
+		
         //accept cmd from console
-        switch (cmd) {
-		case "put":
+        switch (CMD.valueOf(cmd)) {
+		case put:
 			Message msg = new Message(Message.MSG_TYPE.FILE_PUT_REQ, "I will upload a file later");
 			try {
 				msg.send(socket);

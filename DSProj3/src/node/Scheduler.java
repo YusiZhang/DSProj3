@@ -29,10 +29,14 @@ public class Scheduler extends Thread{
 			
 			switch (msg.getType()) {
 			case FILE_PUT_REQ:
-				Message reply = new Message(Message.MSG_TYPE.FILE_PUT_DONE, "Message Received");
+				
+				Message reply = new Message(Message.MSG_TYPE.FILE_PUT_ACK, "Message Received plz use new soc for uploading");
 				System.out.println("Message received from " + socket.getRemoteSocketAddress() + "type: FILE_PUT_REQ; content: " + msg.getContent().toString());
+				
 				try {
 					reply.send(socket);
+					
+					socket.close();
 				} catch (Exception e) {
 					System.out.println("Reply message is wrong " + e.toString());
 				}
