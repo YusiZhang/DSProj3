@@ -1,5 +1,5 @@
 MasterMainPort=15640;
-SlaveMainPort=123;
+SlaveMainPort=11000;
 MasterIP=127.0.0.1;
 StartPort=9000;
 EndPort=10000;

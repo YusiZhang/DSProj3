@@ -14,15 +14,17 @@ import config.ParseConfig;
  * 4. send replica to other slaves
  */
 public class SlaveMain {
+	static int curPort;
 	public static void main(String[] args) {
 		
 		ParseConfig conf;
 		try {
 			System.out.println("start slave");
 			conf = new ParseConfig(args[0]);
+			curPort = conf.StartPort;
 			Socket socket = new Socket(conf.MasterIP, conf.MasterMainPort);
 			//keep listener alive
-			Scheduler scheduler = new Scheduler(11000);
+			Scheduler scheduler = new Scheduler(conf.SlaveMainPort);
 			scheduler.start();
 			
 			Message msg = new Message(Message.MSG_TYPE.REG_NEW_SLAVE, "I am a new slave");
@@ -33,7 +35,11 @@ public class SlaveMain {
 			} catch (Exception e) {
 				System.out.println("Some wrong with put message " + e.toString());
 			}
-						
+			
+//			System.out.println("here goes the slave");
+//			Scheduler scheduler1 = new Scheduler(curPort);
+//			System.out.println("listening on the cur port:"+curPort);
+//			scheduler1.start();
 			
 //			socket.close();
 		} catch (Exception e) {

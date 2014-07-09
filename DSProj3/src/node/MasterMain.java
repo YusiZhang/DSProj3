@@ -23,9 +23,8 @@ public class MasterMain {
 	
 	//currently used port
 	public static int curPort;
-	
+	public static ParseConfig conf;
 	public static void main(String[] args) throws IOException {
-		ParseConfig conf = null;
 		try {
 			System.out.println("start master");
 			conf = new ParseConfig(args[0]);
@@ -38,6 +37,7 @@ public class MasterMain {
 		
 		//run scheduler, listen on MasterMainPort
 		Scheduler scheduler = new Scheduler(conf.MasterMainPort);
+		System.out.println("start the scheduler on "+conf.MasterMainPort);
 		scheduler.start();
 		
 		
