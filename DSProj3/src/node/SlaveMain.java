@@ -1,4 +1,11 @@
 package node;
+
+import java.net.Socket;
+
+import communication.Message;
+
+import config.ParseConfig;
+
 /*
  * For dfs, slave should do following things:
  * 1. response heartbeat request from master
@@ -9,5 +16,30 @@ package node;
 public class SlaveMain {
 	public static void main(String[] args) {
 		
+		ParseConfig conf;
+		try {
+			System.out.println("start slave");
+			conf = new ParseConfig(args[0]);
+			Socket socket = new Socket(conf.MasterIP, conf.MasterMainPort);
+			//keep listener alive
+			Scheduler scheduler = new Scheduler(11000);
+			scheduler.start();
+			
+			Message msg = new Message(Message.MSG_TYPE.REG_NEW_SLAVE, "I am a new slave");
+			try {
+				msg.send(socket);
+//				System.out.println(msg.receive(socket).getContent());
+				System.out.println("send msg from slave");
+			} catch (Exception e) {
+				System.out.println("Some wrong with put message " + e.toString());
+			}
+						
+			
+//			socket.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		String curPort = ParseConfig.StartPort;
 	}
 }
