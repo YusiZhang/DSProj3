@@ -19,7 +19,10 @@ public class Test {
 		
 		
 		try {
-			new Splitter("src/harrypotter.txt", 4194304, "").split();
+			Splitter splitter = new Splitter("src/harrypotter.txt", 4194304, "");
+			splitter.split();
+			//out put the last chunk num of the file.
+			System.out.println(splitter.fileBlk);
 			
 			
 		} catch (Exception e) {

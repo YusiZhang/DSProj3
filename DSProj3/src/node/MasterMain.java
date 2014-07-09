@@ -6,13 +6,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import config.ParseConfig;
 
 /*
+ * ==NameNode===
  * For dfs, master should do following things
  * handled by (master) scheduler:
  * 1. receive files info from client, update slave table
  * and reply layout info to client.
  * 2. find files
  * 3. heartbeat slave
- * 4. upload file
+ * 
  */
 public class MasterMain {
 	

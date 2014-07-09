@@ -15,6 +15,7 @@ public class Splitter {
 	private String baseFileName;
 	private long chunkSize;
 	private String savePath;
+	public int fileBlk;
 
 	public Splitter(String baseFileName, long chunkSize, String savePath) {
 		this.baseFileName = baseFileName;
@@ -23,6 +24,8 @@ public class Splitter {
 	}
 
 	public void split() throws Exception {
+		//everytime call split method, fileBlk should set to 0; 
+		fileBlk = 0;
 		// open base file
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(
 				this.baseFileName));
@@ -32,7 +35,7 @@ public class Splitter {
 		long fileSize = file.length();
 
 		// split file into each full chunk
-		int fileBlk;
+		
 		int fileNum = (int) (fileSize / this.chunkSize);
 		for (fileBlk = 0; fileBlk < fileNum; fileBlk++) {
 			BufferedOutputStream out = new BufferedOutputStream(
@@ -64,7 +67,9 @@ public class Splitter {
 		in.close();
 	}
 	
+	/*
 	public static void main(String[] args) {
 		new Splitter("src/harrypotter.txt", 4194304L, "");
 	}
+	*/
 }
