@@ -1,5 +1,7 @@
 package node;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,22 +19,25 @@ import config.ParseConfig;
 public class MasterMain {
 	
 	//table for slave info : socketAddr-slaveInfo
-	public static ConcurrentHashMap<SocketAddress,SlaveInfo> slavePool = new ConcurrentHashMap<SocketAddress, SlaveInfo>();
+	public static ConcurrentHashMap<Integer,SlaveInfo> slavePool = new ConcurrentHashMap<Integer, SlaveInfo>();
 	
 	//currently used port
 	public static int curPort;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+		ParseConfig conf = null;
 		try {
-			new ParseConfig(args[0]);
-			curPort = ParseConfig.StartPort;
+			System.out.println("start master");
+			conf = new ParseConfig(args[0]);
+			curPort = conf.StartPort;
+ 
 		} catch (Exception e) {
 			System.out.println("Something is wrong with config file " + e.toString());
 			System.exit(1);
 		}
 		
 		//run scheduler, listen on MasterMainPort
-		Scheduler scheduler = new Scheduler();
+		Scheduler scheduler = new Scheduler(conf.MasterMainPort);
 		scheduler.start();
 		
 		

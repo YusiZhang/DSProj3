@@ -3,8 +3,10 @@ package node;
 import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import communication.Message;
@@ -46,7 +48,19 @@ public class ClientMain {
 			Message msg = new Message(Message.MSG_TYPE.FILE_PUT_REQ, "I will upload a file later");
 			try {
 				msg.send(socket);
-				System.out.println(msg.receive(socket).getContent());
+//				System.out.println(msg.receive(socket).getContent().toString());
+				
+				//get the slave list
+				msg = Message.receive(socket);
+				System.out.println("the client receives a message from the master");
+				ArrayList<SlaveInfo> slaveList = (ArrayList<SlaveInfo>) msg.getContent();
+				//connect the slaves via socket
+				for (SlaveInfo s: slaveList) {
+					InetSocketAddress add = (InetSocketAddress) s.address;
+					System.out.println("the client will connect:" +add.getAddress() +" "+add.getPort());
+					socket = new Socket(add.getAddress() ,add.getPort());
+					
+				}
 			} catch (Exception e) {
 				System.out.println("Some wrong with put message " + e.toString());
 			}

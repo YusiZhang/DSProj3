@@ -14,7 +14,7 @@ public class Message implements Serializable{
 	
 		FILE_PUT_REQ, FILE_PUT_ACK,FILE_PUT_DONE, FILE_PUT_FAIL,
 		FILE_GET_REQ, FILE_GET_ACK,FILE_GET_DONE, FILE_GET_FAIL,
-		
+		REG_NEW_SLAVE,AVAIL_SLAVES,
 	}
 	
 	private MSG_TYPE type;
