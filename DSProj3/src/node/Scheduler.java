@@ -14,7 +14,7 @@ import config.ParseConfig;
 
 public class Scheduler extends Thread{
 	public static ConcurrentHashMap<Integer,SlaveInfo> slavePool = new ConcurrentHashMap<Integer,SlaveInfo>();
-	public int port;
+//	public static int curPort = ParseConfig.StartPort;
 	public static int slaveId = 0;
 	ServerSocket listener;
 	public Scheduler(int port) throws IOException{
@@ -32,9 +32,10 @@ public class Scheduler extends Thread{
 		while(true) {
 			Socket socket = null;
 			Message msg = null;
+			ParseConfig conf = null;
 			try {
 				socket = listener.accept();
-				
+				conf = MasterMain.conf;
 				//add the new slave into the registry list
 //				InetAddress address = socket.getInetAddress();				
 				
@@ -48,19 +49,20 @@ public class Scheduler extends Thread{
 			
 			switch (msg.getType()) {
 			case REG_NEW_SLAVE:
-				SocketAddress address = socket.getRemoteSocketAddress();
+				InetAddress address = socket.getInetAddress();
 				SlaveInfo slave = new SlaveInfo(slaveId, address);
 				slaveId++;
 				System.out.println("connect to slave "+slave.slaveId+ " "+ address);
 				slavePool.put(slaveId,slave);
 				break;
-			case FILE_PUT_REQ:
+				
+			case FILE_PUT_REQ_TO_MASTER:
 //				Message reply = new Message(Message.MSG_TYPE.FILE_PUT_ACK, "Message Received. Please use a new socket for uploading");
 				ArrayList<SlaveInfo> slaveList = new ArrayList<SlaveInfo>();
 				for (int s: slavePool.keySet()){
 					slaveList.add(slavePool.get(s));
 				}
-				System.out.println("Message received from " + socket.getRemoteSocketAddress() + " type: FILE_PUT_REQ; content: " + msg.getContent().toString());
+				System.out.println("Message received from " + socket.getRemoteSocketAddress() + " type: FILE_PUT_REQ_TO_MASTER; content: " + msg.getContent().toString());
 				Message reply = new Message(Message.MSG_TYPE.AVAIL_SLAVES, slaveList);
 			
 				//tell the client which slaves are available
@@ -81,7 +83,27 @@ public class Scheduler extends Thread{
 //					System.out.println("Reply message is wrong " + e.toString());
 //				}
 				break;
+				
+			case FILE_PUT_REQ_TO_SLAVE:
+				System.out.println("Message received from " + socket.getRemoteSocketAddress() + " type: FILE_PUT_REQ_TO_SLAVE; content: " + msg.getContent().toString());
+				SlaveMain.curPort++;
 
+				reply = new Message(Message.MSG_TYPE.PORT, SlaveMain.curPort);
+			
+				//tell the client which slaves are available
+				try {
+					reply.send(socket);
+					System.out.println("send the reply to client "+reply.getContent());
+					System.out.println("send the port number from the slave to the client");
+
+					Scheduler s1 = new Scheduler(SlaveMain.curPort);
+					System.out.println("listen on the current port "+SlaveMain.curPort);
+					s1.start();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				break;
 			default:
 				break;
 			}

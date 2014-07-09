@@ -12,6 +12,8 @@ public class ParseConfig {
 	
 	//the port the master listening on
 	public static int MasterMainPort;
+	
+	public static int SlaveMainPort;
 	//the ip address of master
 	public static String MasterIP;
 	//master's start port of port pool
@@ -47,6 +49,7 @@ public class ParseConfig {
 	private void parseArgs(HashMap<String, String> args) {
 		try {
 			MasterMainPort = Integer.parseInt(args.get("MasterMainPort"));
+			SlaveMainPort = Integer.parseInt(args.get("SlaveMainPort"));
 			MasterIP = args.get("MasterIP");
 			StartPort = Integer.parseInt(args.get("StartPort"));
 			EndPort = Integer.parseInt(args.get("EndPort"));
