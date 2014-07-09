@@ -65,12 +65,14 @@ public class Scheduler extends Thread{
 			
 				//tell the client which slaves are available
 				try {
+					
 					reply.send(socket);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				System.out.println("send the slave list from the master to the client");
+				System.out.println(slaveList.toString());
 //				try {
 //					
 //					
