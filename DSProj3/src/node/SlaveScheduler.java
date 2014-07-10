@@ -75,8 +75,8 @@ public class SlaveScheduler extends Thread {
 					Socket fileDownloadSoc = slaveListener.accept();
 					System.out.println("new socket from client" + fileDownloadSoc.getRemoteSocketAddress());
 					//get message from socket
-					Message fileName = Message.receive(fileDownloadSoc);
-					new FileTransfer.Download(fileName.getContent().toString(),fileDownloadSoc);
+//					Message fileName = Message.receive(fileDownloadSoc);
+					new FileTransfer.Download("src/harrypotter.txt_slaveCopy",fileDownloadSoc);
 
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block

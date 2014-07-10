@@ -25,7 +25,7 @@ public class SlaveMain {
 			curPort = conf.StartPort;
 			Socket socket = new Socket(conf.MasterIP, conf.MasterMainPort);
 			//keep listener alive
-			Scheduler scheduler = new Scheduler(conf.SlaveMainPort);
+			SlaveScheduler scheduler = new SlaveScheduler(conf.SlaveMainPort);
 			scheduler.start();
 			
 			Message msg = new Message(Message.MSG_TYPE.REG_NEW_SLAVE, "I am a new slave");

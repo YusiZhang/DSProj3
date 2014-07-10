@@ -34,15 +34,19 @@ public class FileTransfer {
 		}
 
 		public void run() {
-			System.out.println("File Downloading...");	
+			System.out.println("File Uploading...");	
 			try {
+				System.out.println("Iamhere");	
 				myFile = new File(fileName);
 				mybytearray = new byte[(int) myFile.length()];
 				outToClient = new BufferedOutputStream(socket.getOutputStream());
+				System.out.println("getoutputstream");
 				fis = new FileInputStream(myFile);
 				BufferedInputStream bis = new BufferedInputStream(fis);
 				bis.read(mybytearray, 0, mybytearray.length);
+				System.out.println("read");
 				outToClient.write(mybytearray, 0, mybytearray.length);
+				System.out.println("write successed!");
                 outToClient.flush();
                 outToClient.close();
 			    this.socket.close();
@@ -71,7 +75,7 @@ public class FileTransfer {
 			InputStream is;
 			try {
 				is = this.socket.getInputStream();
-				FileOutputStream fos = new FileOutputStream(fileName);
+				FileOutputStream fos = new FileOutputStream(fileName + "_slaveCopy");
 				BufferedOutputStream bos = new BufferedOutputStream(fos);
 				int bytesRead = is.read(mybytearray, 0, mybytearray.length);
 				bos.write(mybytearray, 0, bytesRead);
