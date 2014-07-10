@@ -81,7 +81,7 @@ public class ClientMain {
 					//Notice!!! this msg is used for test... need to change the MSG Type!
 					msg = new Message(Message.MSG_TYPE.FILE_PUT_START_TO_SLAVE,"start to put file");
 					Splitter splitter = new Splitter("src/harrypotter.txt", 4194304L, "");
-					FileInputStream in = new FileInputStream("harrypotter.txt_blk");
+					
 					msg.setContent("");
 					msg.send(socket);
 				}
@@ -94,6 +94,10 @@ public class ClientMain {
 		default:
 			break;
 		}
+		
+	}
+	private static void uploadFile() {
+		// TODO Auto-generated method stub
 		
 	}
 	
