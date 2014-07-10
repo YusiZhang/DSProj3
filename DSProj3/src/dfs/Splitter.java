@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 /*
- * split file into chunks and save them on client mechine 
+ * split file into chunks and save them locally
  */
 public class Splitter {
 

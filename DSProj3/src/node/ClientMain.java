@@ -1,6 +1,7 @@
 package node;
 
 import java.io.Console;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -12,6 +13,7 @@ import java.util.Scanner;
 
 import communication.Message;
 import config.ParseConfig;
+import dfs.Splitter;
 
 /*
  * for dfs:
@@ -77,7 +79,10 @@ public class ClientMain {
 					
 					
 					//Notice!!! this msg is used for test... need to change the MSG Type!
-					msg = new Message(Message.MSG_TYPE.FILE_PUT_ACK,"start to put file");
+					msg = new Message(Message.MSG_TYPE.FILE_PUT_START_TO_SLAVE,"start to put file");
+					Splitter splitter = new Splitter("src/harrypotter.txt", 4194304L, "");
+					FileInputStream in = new FileInputStream("harrypotter.txt_blk");
+					msg.setContent("");
 					msg.send(socket);
 				}
 				

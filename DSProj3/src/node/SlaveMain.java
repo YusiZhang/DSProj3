@@ -15,9 +15,10 @@ import config.ParseConfig;
  */
 public class SlaveMain {
 	static int curPort;
+	static ParseConfig conf;
 	public static void main(String[] args) {
 		
-		ParseConfig conf;
+		
 		try {
 			System.out.println("start slave");
 			conf = new ParseConfig(args[0]);
