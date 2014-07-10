@@ -13,6 +13,7 @@ import java.util.Scanner;
 
 import communication.Message;
 import config.ParseConfig;
+import dfs.FileTransfer;
 import dfs.Splitter;
 
 /*
@@ -79,11 +80,10 @@ public class ClientMain {
 					
 					
 					//Notice!!! this msg is used for test... need to change the MSG Type!
-					msg = new Message(Message.MSG_TYPE.FILE_PUT_START_TO_SLAVE,"start to put file");
-					Splitter splitter = new Splitter("src/harrypotter.txt", 4194304L, "");
-					
-					msg.setContent("");
+					msg = new Message(Message.MSG_TYPE.FILE_PUT_START_TO_SLAVE,"src/harrypotter.txt");
 					msg.send(socket);
+					Splitter splitter = new Splitter("src/harrypotter.txt", 4194304L, "");
+					new FileTransfer.Upload("src/harrypotter.txt",socket).start();
 				}
 				
 			} catch (Exception e) {

@@ -71,10 +71,12 @@ public class SlaveScheduler extends Thread {
 
 					//create listener , wait for reply from client
 					ServerSocket slaveListener = new ServerSocket(SlaveMain.curPort);
-					Socket soc = null;
+					//new socket from client
+					Socket fileDownloadSoc = slaveListener.accept();
+					System.out.println("new socket from client" + fileDownloadSoc.getRemoteSocketAddress());
 					//get message from socket
-					Message fileName = Message.receive(soc);
-					new FileTransfer.Download(fileName.getContent().toString(),soc);
+					Message fileName = Message.receive(fileDownloadSoc);
+					new FileTransfer.Download(fileName.getContent().toString(),fileDownloadSoc);
 
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
