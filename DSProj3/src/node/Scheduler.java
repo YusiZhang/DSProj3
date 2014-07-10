@@ -40,7 +40,7 @@ public class Scheduler extends Thread{
 //				InetAddress address = socket.getInetAddress();				
 				
 				msg = Message.receive(socket);
-				System.out.println("the master receives a "+msg.getType()+" messge");
+				System.out.println("the scheduler receives a "+msg.getType()+" messge");
 				
 			} catch (Exception e) {
 				System.out.println("There is no message " + e.toString());
@@ -96,14 +96,23 @@ public class Scheduler extends Thread{
 					System.out.println("send the reply to client "+reply.getContent());
 					System.out.println("send the port number from the slave to the client");
 
-					Scheduler s1 = new Scheduler(SlaveMain.curPort);
-					System.out.println("listen on the current port "+SlaveMain.curPort);
-					s1.start();
+//					Scheduler s1 = new Scheduler(SlaveMain.curPort);
+//					System.out.println("listen on the current port "+SlaveMain.curPort);
+//					s1.start();
+					ServerSocket slaveListener = new ServerSocket(SlaveMain.curPort);
+					Socket soc = null;
+					soc = slaveListener.accept();
+					Message fileMsg = null;
+					fileMsg = Message.receive(soc);
+					System.out.println("File received from " + fileMsg.getType() +fileMsg.getContent().toString());
+					
+					
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				break;
+			
 			default:
 				break;
 			}
@@ -118,5 +127,10 @@ public class Scheduler extends Thread{
 			}
 			*/
 		}
+	}
+
+	private void receiveFile() {
+		// TODO Auto-generated method stub
+		
 	}
 }
