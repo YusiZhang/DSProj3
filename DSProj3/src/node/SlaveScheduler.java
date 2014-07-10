@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import communication.Message;
 import config.ParseConfig;
+import dfs.FileTransfer;
 
 public class SlaveScheduler extends Thread {
 	// public static int curPort = ParseConfig.StartPort;
@@ -66,21 +67,14 @@ public class SlaveScheduler extends Thread {
 					reply.send(socket);
 					System.out.println("send the reply to client "
 							+ reply.getContent());
-					System.out
-							.println("send the port number from the slave to the client");
+					System.out.println("send the port number from the slave to the client");
 
-					// Scheduler s1 = new Scheduler(SlaveMain.curPort);
-					// System.out.println("listen on the current port "+SlaveMain.curPort);
-					// s1.start();
-					ServerSocket slaveListener = new ServerSocket(
-							SlaveMain.curPort);
+					//create listener , wait for reply from client
+					ServerSocket slaveListener = new ServerSocket(SlaveMain.curPort);
 					Socket soc = null;
-					soc = slaveListener.accept();
-					Message fileMsg = null;
-					fileMsg = Message.receive(soc);
-					System.out.println("File received from "
-							+ fileMsg.getType()
-							+ fileMsg.getContent().toString());
+					//get message from socket
+					Message fileName = Message.receive(soc);
+					new FileTransfer.Download(fileName.getContent().toString(),soc);
 
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
