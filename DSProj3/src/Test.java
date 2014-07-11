@@ -1,4 +1,9 @@
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 import config.ParseConfig;
+import dfs.FileTransfer;
 import dfs.Splitter;
 
 
@@ -17,7 +22,7 @@ public class Test {
 //		}
 		
 		
-		
+		/*
 		try {
 			Splitter splitter = new Splitter("src/harrypotter.txt", 4194304, "");
 			splitter.split();
@@ -28,6 +33,19 @@ public class Test {
 		} catch (Exception e) {
 			
 			System.out.println("" + "\n" + e.toString());
+		}
+		*/
+		
+		//test as a client
+		try {
+			Socket socket = new Socket("127.0.0.1",15440);
+			new FileTransfer.Upload("src/harrypotter.txt", socket).start();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }
