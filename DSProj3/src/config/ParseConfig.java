@@ -20,7 +20,8 @@ public class ParseConfig {
 	public static int StartPort;
 	//master's end port of port pool
 	public static int EndPort;
-	
+	//file blk chunk size
+	public static long ChunkSize;
 	
 	public static String FS_LOC = "dfs/";
 	public static String HTTP_PREFIX = "http://";
@@ -53,7 +54,7 @@ public class ParseConfig {
 			MasterIP = args.get("MasterIP");
 			StartPort = Integer.parseInt(args.get("StartPort"));
 			EndPort = Integer.parseInt(args.get("EndPort"));
-			
+			ChunkSize = Integer.parseInt(args.get("ChunkSize"));
 			if(MasterIP == null) {
 				throw new Exception();
 			}

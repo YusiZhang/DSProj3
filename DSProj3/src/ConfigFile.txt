@@ -3,3 +3,4 @@ SlaveMainPort=11000;
 MasterIP=128.2.246.22;
 StartPort=9000;
 EndPort=10000;
+ChunkSize = 6543;

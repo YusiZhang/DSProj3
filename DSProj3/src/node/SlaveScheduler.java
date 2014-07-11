@@ -29,13 +29,6 @@ public class SlaveScheduler extends Thread {
 	}
 
 	public void run() {
-		try {
-
-		} catch (Exception e) {
-			System.out.println("Master main port listener is wrong "
-					+ e.toString());
-			System.exit(0);
-		}
 
 		while (true) {
 
@@ -53,35 +46,7 @@ public class SlaveScheduler extends Thread {
 			switch (msg.getType()) {
 
 			case FILE_PUT_REQ_TO_SLAVE:
-				System.out.println("Message received from "
-						+ socket.getRemoteSocketAddress()
-						+ " type: FILE_PUT_REQ_TO_SLAVE; content: "
-						+ msg.getContent().toString());
-				SlaveMain.curPort++;
-
-				Message reply = new Message(Message.MSG_TYPE.PORT,
-						SlaveMain.curPort);
-
-				// tell the client which slaves are available
-				try {
-					reply.send(socket);
-					System.out.println("send the reply to client "
-							+ reply.getContent());
-					System.out.println("send the port number from the slave to the client");
-
-					//create listener , wait for reply from client
-					ServerSocket slaveListener = new ServerSocket(SlaveMain.curPort);
-					//new socket from client
-					Socket fileDownloadSoc = slaveListener.accept();
-					System.out.println("new socket from client" + fileDownloadSoc.getRemoteSocketAddress());
-					//get message from socket
-//					Message fileName = Message.receive(fileDownloadSoc);
-					new FileTransfer.Download("src/harrypotter.txt_slaveCopy",fileDownloadSoc);
-
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				fileUploadHandler( msg,  socket);
 				break;
 			case KEEP_ALIVE:
 				break;
@@ -90,6 +55,7 @@ public class SlaveScheduler extends Thread {
 				break;
 			}
 
+			/*
 			try {
 				socket.close();
 				listener.close();
@@ -98,12 +64,45 @@ public class SlaveScheduler extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			*/
 
 		}
 	}
 
-	private void receiveFile() {
-		// TODO Auto-generated method stub
+	private void fileUploadHandler(Message msg, Socket socket) {
+		System.out.println("Message received from "
+				+ socket.getRemoteSocketAddress()
+				+ " type: FILE_PUT_REQ_TO_SLAVE; content: "
+				+ msg.getContent().toString());
+		SlaveMain.curPort++;
 
+		Message reply = new Message(Message.MSG_TYPE.PORT,
+				SlaveMain.curPort);
+
+		// tell the client which slaves are available
+		try {
+			reply.send(socket);
+			System.out.println("send the reply to client "
+					+ reply.getContent());
+			System.out.println("send the port number from the slave to the client");
+
+			//create listener , wait for reply from client
+			ServerSocket slaveListener = new ServerSocket(SlaveMain.curPort);
+			//new socket from client
+			Socket fileDownloadSoc = slaveListener.accept();
+			System.out.println("new socket from client" + fileDownloadSoc.getRemoteSocketAddress());
+			//get message from socket
+			Message fileName = Message.receive(fileDownloadSoc);
+			if(fileName != null){
+				new FileTransfer.Download(fileName.getContent().toString(),fileDownloadSoc).start();
+			}
+			
+
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
 	}
+
+
 }
