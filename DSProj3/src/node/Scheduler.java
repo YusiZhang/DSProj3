@@ -13,7 +13,7 @@ import communication.Message;
 import config.ParseConfig;
 
 public class Scheduler extends Thread{
-	public static ConcurrentHashMap<Integer,SlaveInfo> slavePool = new ConcurrentHashMap<Integer,SlaveInfo>();
+	public static ConcurrentHashMap<Integer,SlaveInfo> slavePool = MasterMain.slavePool;
 //	public static int curPort = ParseConfig.StartPort;
 	public static int slaveId = 0;
 	ServerSocket listener;
@@ -54,6 +54,7 @@ public class Scheduler extends Thread{
 				slaveId++;
 				System.out.println("connect to slave "+slave.slaveId+ " "+ address);
 				slavePool.put(slaveId,slave);
+				System.out.println("master scheduler: now there are "+slavePool.size()+" slaves on master");
 				break;
 				
 			case FILE_PUT_REQ_TO_MASTER:

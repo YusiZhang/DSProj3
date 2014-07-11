@@ -3,6 +3,7 @@ package node;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import config.ParseConfig;
@@ -41,6 +42,11 @@ public class MasterMain {
 		System.out.println("start the scheduler on "+conf.MasterMainPort);
 		scheduler.start();
 		
+		MasterHeartBeat heartbeat = new MasterHeartBeat();
+		heartbeat.start();
+	}
+	public static void handleDeadSlaves(ArrayList<SlaveInfo> failList) {
+		// TODO Auto-generated method stub
 		
 	}
 }
