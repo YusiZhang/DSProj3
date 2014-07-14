@@ -27,11 +27,9 @@ public class FileTransfer {
         FileInputStream fis = null;
         BufferedOutputStream outToClient = null;
         
-        
 		public Upload(String fileName, Socket socket) {
 			this.fileName = fileName;
 			this.socket = socket;
-			
 			
 		}
 
@@ -93,11 +91,12 @@ public class FileTransfer {
 		String fileName = null;
 		Socket socket = null;
 		byte[] mybytearray = null;
-		
-		public Download(String fileName, Socket socket) {
+		long chunkSize;
+		public Download(String fileName, Socket socket, long chunkSize) {
 			this.fileName = fileName;
 			this.socket = socket;
-			mybytearray = new byte[8196000];
+			this.chunkSize = chunkSize;
+			mybytearray = new byte[(int) (chunkSize * 1000)];
 		}
 
 		public void run() {

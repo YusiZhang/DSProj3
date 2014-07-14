@@ -22,9 +22,9 @@ public class Test {
 //		}
 		
 		
-		/*
+		
 		try {
-			Splitter splitter = new Splitter("src/harrypotter.txt", 4194304, "");
+			Splitter splitter = new Splitter("src/harrypotter.txt", 5000, "");
 			splitter.split();
 			//out put the last chunk num of the file.
 			System.out.println(splitter.fileBlk);
@@ -34,8 +34,9 @@ public class Test {
 			
 			System.out.println("" + "\n" + e.toString());
 		}
-		*/
 		
+		
+		/*
 		//test as a client
 		try {
 			Socket socket = new Socket("127.0.0.1",15440);
@@ -47,5 +48,6 @@ public class Test {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 	}
 }
