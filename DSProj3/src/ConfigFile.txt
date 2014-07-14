@@ -4,5 +4,5 @@ SlaveHeartBeatPort=11001;
 MasterIP=127.0.0.1;
 StartPort=9000;
 EndPort=10000;
-ChunkSize=6543;
+ChunkSize=5000;
 HearBeatFreq=5000;
