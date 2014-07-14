@@ -131,6 +131,6 @@ public class Scheduler extends Thread{
 
 	private void receiveFile() {
 		// TODO Auto-generated method stub
-		
+//		System.out.println();
 	}
 }
