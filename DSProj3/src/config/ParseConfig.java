@@ -24,7 +24,8 @@ public class ParseConfig {
 	public static int EndPort;
 	//file blk chunk size
 	public static long ChunkSize;
-	
+	//number of file replica
+	public static int Replica;
 	public static int HearBeatFreq;
 	public static String FS_LOC = "dfs/";
 	public static String HTTP_PREFIX = "http://";
@@ -60,6 +61,7 @@ public class ParseConfig {
 			EndPort = Integer.parseInt(args.get("EndPort"));
 			ChunkSize = Integer.parseInt(args.get("ChunkSize"));
 			HearBeatFreq = Integer.parseInt(args.get("HearBeatFreq"));
+			Replica = Integer.parseInt(args.get("Replica"));
 			if(MasterIP == null) {
 				throw new Exception();
 			}

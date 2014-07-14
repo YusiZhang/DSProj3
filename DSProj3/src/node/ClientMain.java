@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import communication.Message;
+import communication.WriteFileMsg;
 import config.ParseConfig;
 import dfs.FileTransfer;
 import dfs.Splitter;
@@ -50,18 +51,38 @@ public class ClientMain {
         //accept cmd from console
         switch (CMD.valueOf(cmd)) {
 		case put:
-			Message msg = new Message(Message.MSG_TYPE.FILE_PUT_REQ_TO_MASTER, "I will upload a file later");
-			try {
-				msg.send(socket);
+			putFileOnSlaveHandler( socket, param);
+			
+			break;
 
-				
-				//get the slave list
-				msg = Message.receive(socket);
-				System.out.println("the client receives a message from the master");
-				
-				ArrayList<SlaveInfo> slaveList = (ArrayList<SlaveInfo>) msg.getContent();
-				//connect the slaves via socket
-				for (SlaveInfo s: slaveList) {
+		default:
+			break;
+		}
+		
+	}
+	private static void putFileOnSlaveHandler(Socket socket,String fileName) {
+		
+		try {
+			//split file
+			Splitter splitter = new Splitter(fileName, ParseConfig.ChunkSize, "");
+			splitter.split();
+			//get file blk nums
+			int blkNums = splitter.fileBlk;
+			int count = 0;
+			WriteFileMsg writeFileMsg = new WriteFileMsg(fileName,blkNums); 
+			Message msg = new Message(Message.MSG_TYPE.FILE_PUT_REQ_TO_MASTER, writeFileMsg);
+			msg.send(socket);
+
+			
+			//get the slave list
+			msg = Message.receive(socket);
+			System.out.println("the client receives a message from the master");
+			
+			ArrayList<SlaveInfo> slaveList = (ArrayList<SlaveInfo>) msg.getContent();
+			
+			//connect the slaves via socket
+			for (SlaveInfo s: slaveList) {
+				if(count <= blkNums) {
 					InetAddress add = s.address;
 					
 					System.out.println("the client will connect:" +add +" "+ParseConfig.SlaveMainPort);
@@ -80,30 +101,24 @@ public class ClientMain {
 					
 					
 					//Notice!!! this msg is used for test... need to change the MSG Type!
-					msg = new Message(Message.MSG_TYPE.FILE_PUT_START_TO_SLAVE,param);
+					msg = new Message(Message.MSG_TYPE.FILE_PUT_START_TO_SLAVE,fileName + "_blk" + count);
 					msg.send(socket);
 					Thread.sleep(500);
-					Splitter splitter = new Splitter(param, ParseConfig.ChunkSize, "");
 					
-					splitter.split();
 					
-					new FileTransfer.Upload(param,socket).start();
+					new FileTransfer.Upload(fileName + "_blk" + count,socket).start();
+					count++;
+					System.out.println("Uploaded " + fileName + "_blk" + count);
 				}
 				
-			} catch (Exception e) {
-				System.out.println("Some wrong with put message " + e.toString());
 			}
-			break;
-
-		default:
-			break;
+			
+		} catch (Exception e) {
+			System.out.println("Some wrong with put message " + e.toString());
 		}
 		
 	}
-	private static void uploadFile() {
-		// TODO Auto-generated method stub
-		
-	}
+
 	
 }
 
