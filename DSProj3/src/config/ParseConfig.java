@@ -15,13 +15,17 @@ public class ParseConfig {
 	
 	public static int SlaveMainPort;
 	//the ip address of master
+	public static int SlaveHeartBeatPort;
+	
 	public static String MasterIP;
 	//master's start port of port pool
 	public static int StartPort;
 	//master's end port of port pool
 	public static int EndPort;
+	//file blk chunk size
+	public static long ChunkSize;
 	
-	
+	public static int HearBeatFreq;
 	public static String FS_LOC = "dfs/";
 	public static String HTTP_PREFIX = "http://";
 	
@@ -50,10 +54,12 @@ public class ParseConfig {
 		try {
 			MasterMainPort = Integer.parseInt(args.get("MasterMainPort"));
 			SlaveMainPort = Integer.parseInt(args.get("SlaveMainPort"));
+			SlaveHeartBeatPort = Integer.parseInt(args.get("SlaveHeartBeatPort"));
 			MasterIP = args.get("MasterIP");
 			StartPort = Integer.parseInt(args.get("StartPort"));
 			EndPort = Integer.parseInt(args.get("EndPort"));
-			
+			ChunkSize = Integer.parseInt(args.get("ChunkSize"));
+			HearBeatFreq = Integer.parseInt(args.get("HearBeatFreq"));
 			if(MasterIP == null) {
 				throw new Exception();
 			}
