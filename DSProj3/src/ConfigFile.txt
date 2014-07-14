@@ -1,8 +1,9 @@
 MasterMainPort=15640;
 SlaveMainPort=11000;
 SlaveHeartBeatPort=11001;
-MasterIP=127.0.0.1;
+MasterIP=128.2.246.22;
 StartPort=9000;
 EndPort=10000;
-ChunkSize=6543;
+ChunkSize=2896;
 HearBeatFreq=5000;
+Replica=1;

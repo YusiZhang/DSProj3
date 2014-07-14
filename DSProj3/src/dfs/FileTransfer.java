@@ -37,16 +37,13 @@ public class FileTransfer {
 			System.out.println("File Uploading...");	
 			try {
 				
-				System.out.println("Iamhere");	
 				myFile = new File(fileName);
 				mybytearray = new byte[(int) myFile.length()];
-				System.out.println(mybytearray);
+				System.out.println(mybytearray.length);
 				outToClient = new BufferedOutputStream(socket.getOutputStream());
-				System.out.println("getoutputstream");
 				fis = new FileInputStream(myFile);
 				BufferedInputStream bis = new BufferedInputStream(fis);
 				bis.read(mybytearray, 0, mybytearray.length);
-				System.out.println(bis.toString());
 				outToClient.write(mybytearray, 0, mybytearray.length);
 				System.out.println("write successed!");
                 outToClient.flush();
