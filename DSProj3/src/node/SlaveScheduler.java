@@ -104,7 +104,7 @@ public class SlaveScheduler extends Thread {
 			//get message from socket
 			Message fileName = Message.receive(fileDownloadSoc);
 			if(fileName != null){
-				new FileTransfer.Download(fileName.getContent().toString(),fileDownloadSoc).start();
+				new FileTransfer.Download(fileName.getContent().toString() + "slaveCopy",fileDownloadSoc,conf.ChunkSize).start();
 			}
 			
 
