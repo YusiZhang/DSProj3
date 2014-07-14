@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import communication.Message;
+import communication.WriteFileMsg;
 import config.ParseConfig;
 import dfs.FileTransfer;
 import dfs.Splitter;
@@ -60,8 +61,16 @@ public class ClientMain {
 		
 	}
 	private static void putFileOnSlaveHandler(Socket socket,String fileName) {
-		Message msg = new Message(Message.MSG_TYPE.FILE_PUT_REQ_TO_MASTER, "I will upload a file later");
+		
 		try {
+			//split file
+			Splitter splitter = new Splitter(fileName, ParseConfig.ChunkSize, "");
+			splitter.split();
+			//get file blk nums
+			int blkNums = splitter.fileBlk;
+			int count = 0;
+			WriteFileMsg writeFileMsg = new WriteFileMsg(fileName,blkNums); 
+			Message msg = new Message(Message.MSG_TYPE.FILE_PUT_REQ_TO_MASTER, writeFileMsg);
 			msg.send(socket);
 
 			
@@ -70,12 +79,7 @@ public class ClientMain {
 			System.out.println("the client receives a message from the master");
 			
 			ArrayList<SlaveInfo> slaveList = (ArrayList<SlaveInfo>) msg.getContent();
-			//split file
-			Splitter splitter = new Splitter(fileName, ParseConfig.ChunkSize, "");
-			splitter.split();
-			//get file blk nums
-			int blkNums = splitter.fileBlk;
-			int count = 0;
+			
 			//connect the slaves via socket
 			for (SlaveInfo s: slaveList) {
 				if(count <= blkNums) {
