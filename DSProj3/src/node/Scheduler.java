@@ -37,7 +37,7 @@ public class Scheduler extends Thread{
 				socket = listener.accept();
 				conf = MasterMain.conf;
 				msg = Message.receive(socket);
-				System.out.println("the scheduler receives a "+msg.getType()+" messge");
+				System.out.println("the scheduler receives a "+msg.getType()+" messge " + msg.getContent().toString());
 				
 			} catch (Exception e) {
 				System.out.println("There is no message " + e.toString());
@@ -53,6 +53,7 @@ public class Scheduler extends Thread{
 				
 				for(int rep = 0; rep <= conf.Replica; rep++) {
 					WriteFileMsg writeFileMsg = (WriteFileMsg) msg.getContent(); 
+					System.out.println("name:" + writeFileMsg.fileBaseName +" blk:" + writeFileMsg.fileBlk);
 					ArrayList<SlaveInfo> slaveList = fileLayoutGenerate(slavePool,writeFileMsg);
 					//console debug
 					System.out.println(msg.getContent().toString() + "files");
@@ -105,22 +106,27 @@ public class Scheduler extends Thread{
 	 */
 	private ArrayList<SlaveInfo> fileLayoutGenerate(ConcurrentHashMap<Integer, SlaveInfo> slavePool, WriteFileMsg writeFileMsg) {
 		Random rng = new Random(); 
-		Set<Integer> idSet = new HashSet<Integer>();
+//		Set<Integer> idSet = new HashSet<Integer>();
+		ArrayList<Integer> idSet = new ArrayList<Integer>();
 		//select random slave id for file to be input
 		//======
 		//trad-off: it maintains load balance, but when there is not enough slave nodes, the function will crush.
 		//======
-		while (idSet.size() < writeFileMsg.fileBlk)
+		
+		while (idSet.size() <= writeFileMsg.fileBlk + 1)
 		{
+			System.out.println("loop is  iternal");
 		    Integer next = rng.nextInt(slavePool.size());
 		    if(slavePool.contains(next)){
 		    	 idSet.add(next); //if slave is down, its slave ID will not be used for a while.
 		    }
 		   
 		}
+		System.out.println("loop is not iternal");
 		ArrayList<SlaveInfo> slaveList = new ArrayList<SlaveInfo>();
 		int fileId = 0;
 		while(idSet.iterator().hasNext()) {
+			System.out.println("loop is  iternal");
 			int slaveId = idSet.iterator().next();
 			SlaveInfo slaveInfo = slavePool.get(slaveId);
 			slaveList.add(slaveInfo);
@@ -135,6 +141,7 @@ public class Scheduler extends Thread{
 			}
 			fileId++;
 		}
+		System.out.println("loop is not iternal");
 		return slaveList;
 	}
 
