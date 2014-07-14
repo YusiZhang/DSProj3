@@ -37,6 +37,8 @@ public class SlaveMain {
 				System.out.println("Some wrong with put message " + e.toString());
 			}
 			
+			SlaveScheduler slaveHeartBeat = new SlaveScheduler(conf.SlaveHeartBeatPort);
+			slaveHeartBeat.start();
 //			System.out.println("here goes the slave");
 //			Scheduler scheduler1 = new Scheduler(curPort);
 //			System.out.println("listening on the cur port:"+curPort);
