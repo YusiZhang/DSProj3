@@ -1,4 +1,4 @@
-package dfs;
+ package dfs;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -97,7 +97,7 @@ public class FileTransfer {
 		public Download(String fileName, Socket socket) {
 			this.fileName = fileName;
 			this.socket = socket;
-			mybytearray = new byte[81960];
+			mybytearray = new byte[8196000];
 		}
 
 		public void run() {
@@ -105,7 +105,7 @@ public class FileTransfer {
 			try {
 				
 				is = this.socket.getInputStream();
-				FileOutputStream fos = new FileOutputStream(fileName + "_slaveCopy");
+				FileOutputStream fos = new FileOutputStream(fileName);
 				BufferedOutputStream bos = new BufferedOutputStream(fos);
 				int bytesRead = is.read(mybytearray, 0, mybytearray.length);
 				System.out.println(bytesRead);
