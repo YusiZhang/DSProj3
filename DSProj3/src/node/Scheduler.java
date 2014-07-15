@@ -28,6 +28,10 @@ public class Scheduler extends Thread{
 	public static ConcurrentHashMap<Integer, Job> jobPool = new ConcurrentHashMap<Integer, Job>();
 	//file layout record key: slaveInfo value : fileName with blk id
 	public static ConcurrentHashMap<String,ArrayList<SlaveInfo>> fileLayout = new ConcurrentHashMap<String,ArrayList<SlaveInfo>>();
+	
+	public static ConcurrentHashMap<Job, ArrayList<Task>> jobToTask = new ConcurrentHashMap<Job, ArrayList<Task>>();
+    
+	public static ConcurrentHashMap<Task, SlaveInfo> TaskToSlave = new ConcurrentHashMap<Task, SlaveInfo>();
 	public static int slaveId = 0;
 	public static int curJobId = 0;
 	ServerSocket listener;
@@ -142,9 +146,13 @@ public class Scheduler extends Thread{
 		for(String file : fileToSlave.keySet()){
 			SlaveInfo curSlave = fileToSlave.get(file);
 			try {
-				//build soc
+				//build socket
 				Socket soc =  new Socket(curSlave.address.getHostName(),MasterMain.conf.SlaveMainPort);
-				Task task = (Task)job;
+				Task task = new Task();
+				task.setInputFileName(file);
+				task.setTaskClass(job.getMapperClass());
+				task.setJobName(job.getJobName());
+				
 				Message taskMsg = new Message(Message.MSG_TYPE.NEW_TASK, task);
 			} catch (UnknownHostException e) {
 				e.printStackTrace();

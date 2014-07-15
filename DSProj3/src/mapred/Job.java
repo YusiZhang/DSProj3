@@ -2,6 +2,7 @@ package mapred;
 
 import java.io.Serializable;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import node.Scheduler;
 import communication.Message;
@@ -19,7 +20,8 @@ public class Job implements Serializable{
 	protected String inputPath;
 	protected String outputPath;
 	protected Message msg;
-	
+
+	public Job(){}
 	public Job(String jobName) {
 		this.jobName = jobName;
 	}
