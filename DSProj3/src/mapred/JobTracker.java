@@ -1,5 +1,5 @@
 package mapred;
-
-public class JobTracker {
+import java.rmi.*;
+public class JobTracker implements Remote{
 
 }
