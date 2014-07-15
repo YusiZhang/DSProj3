@@ -102,8 +102,10 @@ public class FileTransfer {
 				
 				is = this.socket.getInputStream();
 				FileOutputStream fos = new FileOutputStream(fileName);
+				//while loop until read reach total amount of chunk size
 				BufferedOutputStream bos = new BufferedOutputStream(fos);
 				int bytesRead = is.read(mybytearray, 0, mybytearray.length);
+				System.out.println(fileName);
 				System.out.println(bytesRead);
 				bos.write(mybytearray, 0, bytesRead);
 			    bos.close();
