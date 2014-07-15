@@ -214,7 +214,6 @@ public class Scheduler extends Thread{
 	/*
 	 * update slavePool when a new slave register on master
 	 * @params socket
-	 * 
 	 */
 	private void regNewSlaveHandler(Socket socket) {
 		InetAddress address = socket.getInetAddress();
