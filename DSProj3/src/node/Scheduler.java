@@ -6,13 +6,17 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import mapred.Job;
+import mapred.Task;
 import communication.Message;
 import communication.WriteFileMsg;
 import config.ParseConfig;
@@ -20,9 +24,12 @@ import config.ParseConfig;
 public class Scheduler extends Thread{
 	//slave pool
 	public static ConcurrentHashMap<Integer,SlaveInfo> slavePool = new ConcurrentHashMap<Integer,SlaveInfo>();
+	//job pool
+	public static ConcurrentHashMap<Integer, Job> jobPool = new ConcurrentHashMap<Integer, Job>();
 	//file layout record key: slaveInfo value : fileName with blk id
 	public static ConcurrentHashMap<String,ArrayList<SlaveInfo>> fileLayout = new ConcurrentHashMap<String,ArrayList<SlaveInfo>>();
 	public static int slaveId = 0;
+	public static int curJobId = 0;
 	ServerSocket listener;
 	public Scheduler(int port) throws IOException{
 		listener = new ServerSocket(port);
@@ -51,7 +58,6 @@ public class Scheduler extends Thread{
 				break;
 				
 			case FILE_PUT_REQ_TO_MASTER:
-
 				
 				WriteFileMsg writeFileMsg = (WriteFileMsg) msg.getContent(); 
 				System.out.println("name:" + writeFileMsg.fileBaseName +" blk:" + writeFileMsg.fileBlk);
@@ -92,6 +98,10 @@ public class Scheduler extends Thread{
 				
 				break;
 				
+			case NEW_JOB:
+				submitJob((Job) msg.getContent(), socket);
+				
+				break;
 			
 			
 			default:
@@ -103,6 +113,49 @@ public class Scheduler extends Thread{
 
 
 	
+	private void submitJob(Job job, Socket socket) {
+		job.setJobId();
+		
+		jobPool.put(job.getJobId(), job);
+		// how to copy the file to the master? here is the master
+		HashMap<String, SlaveInfo> fileToSlave = new HashMap<String, SlaveInfo>(); 
+//		ArrayList<SlaveInfo> slavesWithFile = new ArrayList<SlaveInfo>();
+		String baseFileName = job.getInputFileName();
+		int length = baseFileName.length();
+		ArrayList<SlaveInfo> tempSlave = new ArrayList<SlaveInfo>();
+		for(String fileName : fileLayout.keySet()){
+			if(fileName.substring(0, length).equals(baseFileName)){
+				fileToSlave.put(fileName,fileLayout.get(fileName).get(0));
+			}
+		}
+		
+		/*
+		 * for test
+		 */
+		for(String file : fileToSlave.keySet()){
+			System.out.println(file + "is on " + fileToSlave.get(file).slaveId);
+		}
+		
+	
+		//assign the tasks to different slaves
+		//send file name to each slaves via socket
+		for(String file : fileToSlave.keySet()){
+			SlaveInfo curSlave = fileToSlave.get(file);
+			try {
+				//build soc
+				Socket soc =  new Socket(curSlave.address.getHostName(),MasterMain.conf.SlaveMainPort);
+				Task task = (Task)job;
+				Message taskMsg = new Message(Message.MSG_TYPE.NEW_TASK, task);
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+	}
+
 	/*
 	 * used for generate file replica policy
 	 */

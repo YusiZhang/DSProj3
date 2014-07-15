@@ -3,6 +3,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import mapred.Job;
+import mapred.Task;
 import config.ParseConfig;
 import dfs.FileTransfer;
 import dfs.Splitter;
@@ -51,6 +53,7 @@ public class Test {
 		}
 		*/
 		
+		/*
 		String str1 = "1";
 		String str2 = "2";
 		String str3 = "3";
@@ -61,5 +64,7 @@ public class Test {
 		for(String str : list){
 			System.out.println(str);
 		}
+		*/
+
 	}
 }
