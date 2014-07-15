@@ -52,7 +52,7 @@ public class ClientMain {
 		// accept cmd from console
 		switch (CMD.valueOf(cmd)) {
 		case put:
-			putFileOnSlaveHandler(socket, param);
+			putFileHandler(socket, param);
 
 			break;
 
@@ -61,8 +61,8 @@ public class ClientMain {
 		}
 
 	}
-
-	private static void putFileOnSlaveHandler(Socket socket, String fileName) {
+	
+	public static void putFileHandler(Socket socket, String fileName) {
 
 		try {
 			// split file
