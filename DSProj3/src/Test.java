@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import config.ParseConfig;
 import dfs.FileTransfer;
@@ -22,7 +23,7 @@ public class Test {
 //		}
 		
 		
-		
+		/*
 		try {
 			Splitter splitter = new Splitter("src/harrypotter.txt", 5000, "");
 			splitter.split();
@@ -34,7 +35,7 @@ public class Test {
 			
 			System.out.println("" + "\n" + e.toString());
 		}
-		
+		*/
 		
 		/*
 		//test as a client
@@ -49,5 +50,16 @@ public class Test {
 			e.printStackTrace();
 		}
 		*/
+		
+		String str1 = "1";
+		String str2 = "2";
+		String str3 = "3";
+		ArrayList<String> list = new ArrayList<String>();
+		list.add(str2);
+		list.add(str1);
+		list.add(str3);
+		for(String str : list){
+			System.out.println(str);
+		}
 	}
 }
