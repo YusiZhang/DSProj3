@@ -6,7 +6,7 @@ import mapred.LongWritable;
 import mapred.Mapper;
 import mapred.Text;
 
-public class WorldCountMaper extends Mapper{
+public class WoldCountMaper extends Mapper{
 
 	@Override
 	public void map(LongWritable key, Text value, Context context) {
