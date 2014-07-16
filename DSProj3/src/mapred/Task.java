@@ -2,6 +2,7 @@ package mapred;
 
 import java.io.Serializable;
 
+import node.SlaveInfo;
 import communication.Message;
 
 
@@ -11,6 +12,7 @@ public class Task extends Job implements Serializable{
 	private int taskId;
 //	protected String taskName;
 	private String TaskClass;
+	private SlaveInfo reduceSlave;
 	
 	public Task(String taskName) {
 		super(taskName);
@@ -35,5 +37,18 @@ public class Task extends Job implements Serializable{
 
 	public void setTaskId(int taskId) {
 		this.taskId = taskId;
+	}
+
+	public void setJobId(int jobId) {
+		this.jobId = jobId;
+		
+	}
+
+	public SlaveInfo getReduceSlave() {
+		return reduceSlave;
+	}
+
+	public void setReduceSlave(SlaveInfo reduceSlave) {
+		this.reduceSlave = reduceSlave;
 	}
 }
