@@ -10,7 +10,6 @@ public class Context implements Serializable{
 	private int reduceSize;
 	private String baseName;
 	private ArrayList<PrintWriter> writerList;
-	
 	public Context () {
 		
 	}
@@ -42,6 +41,7 @@ public class Context implements Serializable{
 		for(PrintWriter writer : writerList){
 			writer.close();
 		}
+		
 	}
 	
 	
