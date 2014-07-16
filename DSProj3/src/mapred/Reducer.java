@@ -1,12 +1,12 @@
 package mapred;
 
+import io.FixValue;
+import io.Text;
 import io.Writable;
 
 public class Reducer {
 
-	public void reduce(Writable<?> key, Iterable<Writable<?>> values,
-			Context context) {
-		// TODO Auto-generated method stub
+	public void reduce(Text key, Iterable<FixValue> values, Context context) {
 		
 	}
 
