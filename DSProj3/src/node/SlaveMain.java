@@ -14,8 +14,8 @@ import config.ParseConfig;
  * 4. send replica to other slaves
  */
 public class SlaveMain {
-	static int curPort;
-	static ParseConfig conf;
+	public static int curPort;
+	public static ParseConfig conf;
 	public static void main(String[] args) {
 		
 		
@@ -31,24 +31,16 @@ public class SlaveMain {
 			Message msg = new Message(Message.MSG_TYPE.REG_NEW_SLAVE, "I am a new slave");
 			try {
 				msg.send(socket);
-//				System.out.println(msg.receive(socket).getContent());
-				System.out.println("send msg from slave");
+				System.out.println("send msg from slave" + msg.getContent().toString());
 			} catch (Exception e) {
 				System.out.println("Some wrong with put message " + e.toString());
 			}
 			
 			SlaveScheduler slaveHeartBeat = new SlaveScheduler(conf.SlaveHeartBeatPort);
 			slaveHeartBeat.start();
-//			System.out.println("here goes the slave");
-//			Scheduler scheduler1 = new Scheduler(curPort);
-//			System.out.println("listening on the cur port:"+curPort);
-//			scheduler1.start();
 			
-//			socket.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		String curPort = ParseConfig.StartPort;
 	}
 }
