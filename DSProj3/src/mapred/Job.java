@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import node.Scheduler;
+import node.SlaveInfo;
 import communication.Message;
 import config.ParseConfig;
 
@@ -20,9 +21,12 @@ public class Job implements Serializable{
 	protected String inputPath;
 	protected String outputPath;
 	protected Message msg;
-	private int taskSplits;
-	private int finishedTasks;
-
+	private int mapperTaskSplits;
+	private int reducerTaskSplits;
+	public int finishedMapperTasks;
+	public int finishedReducerTasks;
+	private ArrayList<String> ReducerOutputFile = new ArrayList<String>();
+	private ArrayList<SlaveInfo> reduceLists  = new ArrayList<SlaveInfo>();
 	public Job(){}
 	public Job(String jobName) {
 		this.jobName = jobName;
@@ -126,18 +130,43 @@ public class Job implements Serializable{
 	public void setOutputPath(String outputPath) {
 		this.outputPath = outputPath;
 	}
-	public int getFinishedTasks() {
-		return finishedTasks;
+	public int getMapperTaskSplits() {
+		return mapperTaskSplits;
 	}
-	public void setFinishedTasks(int finishedTasks) {
-		this.finishedTasks = finishedTasks;
+	public void setMapperTaskSplits(int mapperTaskSplits) {
+		this.mapperTaskSplits = mapperTaskSplits;
 	}
-	public int getTaskSplits() {
-		return taskSplits;
+	public int getFinishedMapperTasks() {
+		return finishedMapperTasks;
 	}
-	public void setTaskSplits(int taskSplits) {
-		this.taskSplits = taskSplits;
+	public void setFinishedMapperTasks(int finishedMapperTasks) {
+		this.finishedMapperTasks = finishedMapperTasks;
 	}
+	public int getReducerTaskSplits() {
+		return reducerTaskSplits;
+	}
+	public void setReducerTaskSplits(int reducerTaskSplits) {
+		this.reducerTaskSplits = reducerTaskSplits;
+	}
+	public int getFinishedReducerTasks() {
+		return finishedReducerTasks;
+	}
+	public void setFinishedReducerTasks(int finishedReducerTasks) {
+		this.finishedReducerTasks = finishedReducerTasks;
+	}
+	public ArrayList<SlaveInfo> getReduceLists() {
+		return reduceLists;
+	}
+	public void setReduceLists(ArrayList<SlaveInfo> reduceLists) {
+		this.reduceLists = reduceLists;
+	}
+	public ArrayList<String> getReducerOutputFile() {
+		return ReducerOutputFile;
+	}
+	public void setReducerOutputFile(ArrayList<String> reducerOutputFile) {
+		ReducerOutputFile = reducerOutputFile;
+	}
+	
 	
 	
 }
