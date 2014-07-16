@@ -20,6 +20,8 @@ public class Job implements Serializable{
 	protected String inputPath;
 	protected String outputPath;
 	protected Message msg;
+	private int taskSplits;
+	private int finishedTasks;
 
 	public Job(){}
 	public Job(String jobName) {
@@ -123,6 +125,18 @@ public class Job implements Serializable{
 	}
 	public void setOutputPath(String outputPath) {
 		this.outputPath = outputPath;
+	}
+	public int getFinishedTasks() {
+		return finishedTasks;
+	}
+	public void setFinishedTasks(int finishedTasks) {
+		this.finishedTasks = finishedTasks;
+	}
+	public int getTaskSplits() {
+		return taskSplits;
+	}
+	public void setTaskSplits(int taskSplits) {
+		this.taskSplits = taskSplits;
 	}
 	
 	

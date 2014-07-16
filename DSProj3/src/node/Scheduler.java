@@ -29,9 +29,12 @@ public class Scheduler extends Thread{
 	//file layout record key: slaveInfo value : fileName with blk id
 	public static ConcurrentHashMap<String,ArrayList<SlaveInfo>> fileLayout = new ConcurrentHashMap<String,ArrayList<SlaveInfo>>();
 	
-	public static ConcurrentHashMap<Job, ArrayList<Task>> jobToTask = new ConcurrentHashMap<Job, ArrayList<Task>>();
+	public static ConcurrentHashMap<Job, ArrayList<Task>> jobToMapper = new ConcurrentHashMap<Job, ArrayList<Task>>();
+	
+	public static ConcurrentHashMap<Job, ArrayList<Task>> jobToReducer = new ConcurrentHashMap<Job, ArrayList<Task>>();
     
 	public static ConcurrentHashMap<Task, SlaveInfo> TaskToSlave = new ConcurrentHashMap<Task, SlaveInfo>();
+	
 	public static int slaveId = 0;
 	public static int curJobId = 0;
 	ServerSocket listener;
@@ -103,10 +106,30 @@ public class Scheduler extends Thread{
 				break;
 				
 			case NEW_JOB:
-				submitJob((Job) msg.getContent(), socket);
+				submitMapperJob((Job) msg.getContent(), socket);
 				
 				break;
 			
+			case MAPPER_SUCCESS:
+				try {
+					msg = Message.receive(socket);
+					
+					Job job = (Job) msg.getContent();
+					job.setFinishedTasks(job.getFinishedTasks()+1);
+					//if all the mapper tasks sucess, assign the reducer tasks
+					if (job.getFinishedTasks() == job.getTaskSplits())
+						submitReduceJob();
+					
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//update the status of job and task
+				
+				break;
 			
 			default:
 				break;
@@ -117,10 +140,16 @@ public class Scheduler extends Thread{
 
 
 	
-	private void submitJob(Job job, Socket socket) {
+	private void submitReduceJob() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void submitMapperJob(Job job, Socket socket) {
 		job.setJobId();
 		
 		jobPool.put(job.getJobId(), job);
+		
 		// how to copy the file to the master? here is the master
 		HashMap<String, SlaveInfo> fileToSlave = new HashMap<String, SlaveInfo>(); 
 //		ArrayList<SlaveInfo> slavesWithFile = new ArrayList<SlaveInfo>();
@@ -143,25 +172,30 @@ public class Scheduler extends Thread{
 	
 		//assign the tasks to different slaves
 		//send file name to each slaves via socket
+		jobToMapper.put(job, new ArrayList<Task>());
 		for(String file : fileToSlave.keySet()){
 			SlaveInfo curSlave = fileToSlave.get(file);
 			try {
 				//build socket
 				Socket soc =  new Socket(curSlave.address.getHostName(),MasterMain.conf.SlaveMainPort);
+				//generate a new task
 				Task task = new Task();
 				task.setInputFileName(file);
 				task.setTaskClass(job.getMapperClass());
 				task.setJobName(job.getJobName());
+				task.setJobId(job.getJobId());
+				jobToMapper.get(job).add(task);
+				TaskToSlave.put(task, curSlave);
 				
+				//send the new task to the slave
 				Message taskMsg = new Message(Message.MSG_TYPE.NEW_TASK, task);
+				
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		
 	}
 
 	/*
