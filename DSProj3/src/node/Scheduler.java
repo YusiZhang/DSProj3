@@ -25,6 +25,7 @@ public class Scheduler extends Thread{
 	//slave pool
 	public static ConcurrentHashMap<Integer,SlaveInfo> slavePool = new ConcurrentHashMap<Integer,SlaveInfo>();
 	//job pool
+	ConcurrentHashMap<Integer, SlaveInfo> failPool = new ConcurrentHashMap<Integer, SlaveInfo>();
 	public static ConcurrentHashMap<Integer, Job> jobPool = new ConcurrentHashMap<Integer, Job>();
 	//file layout record key: slaveInfo value : fileName with blk id
 	public static ConcurrentHashMap<String,ArrayList<SlaveInfo>> fileLayout = new ConcurrentHashMap<String,ArrayList<SlaveInfo>>();
@@ -113,19 +114,28 @@ public class Scheduler extends Thread{
 			case MAPPER_DONE:
 				try {
 					Job job = (Job) msg.getContent();
-					job.setFinishedTasks(job.getFinishedTasks()+1);
+					job.finishedMapperTasks++;
 					//if all the mapper tasks sucess, assign the reducer tasks
-					if (job.getFinishedTasks() == job.getTaskSplits())
-						submitReduceJob();
-					
+					if (job.finishedMapperTasks == job.getMapperTaskSplits()){
+						System.out.println("All the mapper task of "+job.getJobName()+" are done!");
+						submitReduceJob(job);
+					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				//update the status of job and task
-				
 				break;
 			
+			case REDUCER_DONE:
+			{
+				Job job = (Job)msg.getContent();
+				job.finishedReducerTasks++;
+				mergeFile(job);
+				if (job.finishedReducerTasks == job.getReducerTaskSplits()) {
+					System.out.println("All the reducer task of "+job.getJobName()+" are done!");
+					
+				}
+			}
 			default:
 				break;
 			}
@@ -133,24 +143,23 @@ public class Scheduler extends Thread{
 		}
 	}
 
-
-	
-	private void submitReduceJob() {
-		// TODO Auto-generated method stub
+	private void mergeFile(Job job) {
+		
 		
 	}
 
 	private void submitMapperJob(Job job, Socket socket) {
+		System.out.println("Start the map job!");
 		job.setJobId();
 		
 		jobPool.put(job.getJobId(), job);
 		
+		setReduceList(job);
+		
 		// how to copy the file to the master? here is the master
 		HashMap<String, SlaveInfo> fileToSlave = new HashMap<String, SlaveInfo>(); 
-//		ArrayList<SlaveInfo> slavesWithFile = new ArrayList<SlaveInfo>();
 		String baseFileName = job.getInputFileName();
 		int length = baseFileName.length();
-		ArrayList<SlaveInfo> tempSlave = new ArrayList<SlaveInfo>();
 		for(String fileName : fileLayout.keySet()){
 			if(fileName.substring(0, length).equals(baseFileName)){
 				fileToSlave.put(fileName,fileLayout.get(fileName).get(0));
@@ -168,6 +177,7 @@ public class Scheduler extends Thread{
 		//assign the tasks to different slaves
 		//send file name to each slaves via socket
 		jobToMapper.put(job, new ArrayList<Task>());
+		int countTaskSplit = 0;
 		for(String file : fileToSlave.keySet()){
 			SlaveInfo curSlave = fileToSlave.get(file);
 			try {
@@ -179,20 +189,79 @@ public class Scheduler extends Thread{
 				task.setTaskClass(job.getMapperClass());
 				task.setJobName(job.getJobName());
 				task.setJobId(job.getJobId());
+				task.setReduceLists(job.getReduceLists());
+
 				jobToMapper.get(job).add(task);
 				TaskToSlave.put(task, curSlave);
-				
+				countTaskSplit++;
 				//send the new task to the slave
 				Message taskMsg = new Message(Message.MSG_TYPE.NEW_TASK, task);
+				
+				taskMsg.send(soc);
 				
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
+		job.setMapperTaskSplits(countTaskSplit);
 	}
 
+	
+	
+	private void setReduceList(Job job) {
+		for (int i = 0; i < job.getReducerTaskSplits(); i++) {
+			
+			if (slavePool.containsKey(i) && failPool.containsKey(i)) {
+				System.out.println("We only have "+ i + " nodes.");
+				break;
+			}
+			else {
+				job.getReduceLists().add(slavePool.get(i));
+			}
+		}
+		
+	}
+
+	private void submitReduceJob(Job job) {
+		System.out.println("Start the reduce job!");
+		
+		for (int i = 0; i < job.getReduceLists().size(); i++) {
+			SlaveInfo curSlave = job.getReduceLists().get(i);
+			//new a task
+			Task task = new Task();
+			task.setJobId(job.getJobId());
+			task.setTaskClass(job.getReducerClass());
+			task.setInputFileName(((Integer)job.getJobId()).toString());
+			task.setOutputFileName(job.getOutputFileName());
+			
+			//connect to the slave
+			Socket soc;
+			try {
+				soc = new Socket(curSlave.address.getHostName(),MasterMain.conf.SlaveMainPort);
+
+				Message taskMsg = new Message(Message.MSG_TYPE.NEW_TASK,task);
+				taskMsg.send(soc);
+				
+				
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
 	/*
 	 * used for generate file replica policy
 	 */
