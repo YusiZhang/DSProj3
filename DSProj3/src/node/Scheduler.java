@@ -110,19 +110,14 @@ public class Scheduler extends Thread{
 				
 				break;
 			
-			case MAPPER_SUCCESS:
+			case MAPPER_DONE:
 				try {
-					msg = Message.receive(socket);
-					
 					Job job = (Job) msg.getContent();
 					job.setFinishedTasks(job.getFinishedTasks()+1);
 					//if all the mapper tasks sucess, assign the reducer tasks
 					if (job.getFinishedTasks() == job.getTaskSplits())
 						submitReduceJob();
 					
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
