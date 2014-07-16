@@ -1,4 +1,4 @@
-package mapred;
+package io;
 
 import java.io.Serializable;
 

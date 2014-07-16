@@ -1,5 +1,6 @@
 package example;
 
+import io.Writable;
 import mapred.*;
 
 

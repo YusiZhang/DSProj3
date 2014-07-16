@@ -1,5 +1,8 @@
 package mapred;
 
+import io.FixValue;
+import io.Text;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;

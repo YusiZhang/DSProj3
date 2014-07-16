@@ -1,4 +1,4 @@
-package mapred;
+package io;
 
 public class FixValue {
 	private Object value;

@@ -1,5 +1,7 @@
 package mapred;
 
+import io.Writable;
+
 public class PerformReduce extends Thread {
 	
 	public class KeyValuePair implements Comparable<KeyValuePair>{

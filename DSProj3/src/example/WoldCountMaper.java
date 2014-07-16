@@ -1,10 +1,10 @@
 package example;
 
+import io.FixValue;
+import io.LongWritable;
+import io.Text;
 import mapred.Context;
-import mapred.FixValue;
-import mapred.LongWritable;
 import mapred.Mapper;
-import mapred.Text;
 
 public class WoldCountMaper extends Mapper{
 
