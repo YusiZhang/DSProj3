@@ -46,7 +46,7 @@ public class SlaveScheduler extends Thread {
 			switch (msg.getType()) {
 
 			case FILE_PUT_REQ_TO_SLAVE:
-				fileUploadHandler( msg,  socket);
+				fileDownloadHandler( msg,  socket);
 				break;
 				
 			case KEEP_ALIVE:
@@ -60,26 +60,37 @@ public class SlaveScheduler extends Thread {
 					e.printStackTrace();
 				}
 				break;
-			
+			case NEW_MAP_TO_SLAVE:
+				newMapHandler(msg,socket);
+				break;
+			case NEW_REDUCE_TO_SLAVE:
+				newReduceHandler(msg,socket);
+				break;
 			default:
 				break;
 			}
 			
-			/*
-			try {
-				socket.close();
-				listener.close();
 
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			*/
 
 		}
 	}
+	
+	/*
+	 * Handle reduce task
+	 */
+	private void newReduceHandler(Message msg2, Socket socket2) {
+		
+	}
+	
+	/*
+	 * Handle map task
+	 * In msg, there should be reduce slave info. Maper slave can know where to send result.
+	 */
+	private void newMapHandler(Message msg, Socket socket) {
+			
+	}
 
-	private void fileUploadHandler(Message msg, Socket socket) {
+	private void fileDownloadHandler(Message msg, Socket socket) {
 		System.out.println("Message received from "
 				+ socket.getRemoteSocketAddress()
 				+ " type: FILE_PUT_REQ_TO_SLAVE; content: "
@@ -104,7 +115,7 @@ public class SlaveScheduler extends Thread {
 			//get message from socket
 			Message fileName = Message.receive(fileDownloadSoc);
 			if(fileName != null){
-				new FileTransfer.Download(fileName.getContent().toString() + "slaveCopy",fileDownloadSoc,conf.ChunkSize).start();
+				new FileTransfer.Download(fileName.getContent().toString(),fileDownloadSoc,conf.ChunkSize).start();
 			}
 			
 
