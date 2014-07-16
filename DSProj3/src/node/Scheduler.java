@@ -107,6 +107,7 @@ public class Scheduler extends Thread{
 				break;
 				
 			case NEW_JOB:
+				
 				submitMapperJob((Job) msg.getContent(), socket);
 				
 				break;
@@ -156,7 +157,6 @@ public class Scheduler extends Thread{
 		
 		setReduceList(job);
 		
-		// how to copy the file to the master? here is the master
 		HashMap<String, SlaveInfo> fileToSlave = new HashMap<String, SlaveInfo>(); 
 		String baseFileName = job.getInputFileName();
 		int length = baseFileName.length();
@@ -190,7 +190,7 @@ public class Scheduler extends Thread{
 				task.setJobName(job.getJobName());
 				task.setJobId(job.getJobId());
 				task.setReduceLists(job.getReduceLists());
-
+				task.setInputFileName(file);
 				jobToMapper.get(job).add(task);
 				TaskToSlave.put(task, curSlave);
 				countTaskSplit++;
@@ -257,11 +257,10 @@ public class Scheduler extends Thread{
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			
+			}	
 		}
-		
 	}
+	
 	/*
 	 * used for generate file replica policy
 	 */
