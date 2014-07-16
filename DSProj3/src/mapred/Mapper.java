@@ -1,5 +1,5 @@
 package mapred;
 
-public class Mapper {
-
+public abstract class Mapper {
+	public abstract void map(LongWritable key, Text value, Context context);
 }

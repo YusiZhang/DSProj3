@@ -9,6 +9,7 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import mapred.Task;
 import communication.Message;
 import config.ParseConfig;
 import dfs.FileTransfer;
@@ -87,7 +88,13 @@ public class SlaveScheduler extends Thread {
 	 * In msg, there should be reduce slave info. Maper slave can know where to send result.
 	 */
 	private void newMapHandler(Message msg, Socket socket) {
-			
+		Task map = (Task) msg.getContent();
+		String fileName = map.getInputFileName();
+		try {
+			Class maper = Class.forName(map.getMapperClass());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void fileDownloadHandler(Message msg, Socket socket) {
