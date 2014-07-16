@@ -60,11 +60,11 @@ public class SlaveScheduler extends Thread {
 					e.printStackTrace();
 				}
 				break;
-
+			
 			default:
 				break;
 			}
-
+			
 			/*
 			try {
 				socket.close();
