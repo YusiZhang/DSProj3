@@ -80,7 +80,10 @@ public class ClientMain{
 			// get the slave list
 			msg = Message.receive(socket);
 			System.out.println("the client receives a message from the master");
-
+			//close socket connecting with master
+			socket.close();
+			
+			
 			ArrayList<SlaveInfo> slaveList = (ArrayList<SlaveInfo>) msg.getContent();
 
 			// connect the slaves via socket
@@ -90,38 +93,36 @@ public class ClientMain{
 
 					System.out.println("the client will connect:" + add + " "
 							+ ParseConfig.SlaveMainPort);
-					socket = new Socket(add, ParseConfig.SlaveMainPort);
+					Socket socketToSlave = new Socket(add, ParseConfig.SlaveMainPort);
 
-					msg = new Message(Message.MSG_TYPE.FILE_PUT_REQ_TO_SLAVE,
-							"I will upload a file to the slave");
-					System.out.println("receive the msg: " + msg.getContent());
-					msg.send(socket);
+					msg = new Message(Message.MSG_TYPE.FILE_PUT_REQ_TO_SLAVE,"I will upload a file to the slave");
+					System.out.println("send the msg: " + msg.getContent());
+					msg.send(socketToSlave);
 					System.out.println("client send the msg to slave");
 
-					msg = Message.receive(socket);// waiting to receive what
+					msg = Message.receive(socketToSlave);// waiting to receive what
 													// port should be uploding
 													// file to slave. msg sent
 													// from slave
-					System.out
-							.println("the client receives a message from the slave");
+				
+					//close socket connecting slave main port
+					socketToSlave.close();
+					System.out.println("the client receives a message from the slave");
 					// connect the slave via the port assigned by the slave
-					socket = new Socket(add, Integer.parseInt(msg.getContent()
-							.toString()));
-					System.out
-							.println("client connect to slave via assigned port "
-									+ msg.getContent().toString());
+					Socket socketPutFile = new Socket(add, Integer.parseInt(msg.getContent().toString()));
+					System.out.println("client connect to slave via assigned port "+ msg.getContent().toString());
 
 					// Notice!!! this msg is used for test... need to change the
 					// MSG Type!
 					msg = new Message(Message.MSG_TYPE.FILE_PUT_START_TO_SLAVE,
 							fileName + "_blk" + count);
-					msg.send(socket);
+					msg.send(socketPutFile);
 					Thread.sleep(500);
 
-					new FileTransfer.Upload(fileName + "_blk" + count, socket)
-							.start();
+					new FileTransfer.Upload(fileName + "_blk" + count, socketPutFile).start();
 					count++;
 					System.out.println("Uploaded " + fileName + "_blk" + count);
+					
 				} else {
 					//set count = 0 for replica
 					count = 0;
@@ -129,36 +130,34 @@ public class ClientMain{
 
 					System.out.println("the client will connect:" + add + " "
 							+ ParseConfig.SlaveMainPort);
-					socket = new Socket(add, ParseConfig.SlaveMainPort);
+					Socket socketToSlave = new Socket(add, ParseConfig.SlaveMainPort);
 
 					msg = new Message(Message.MSG_TYPE.FILE_PUT_REQ_TO_SLAVE,
 							"I will upload a file to the slave");
-					System.out.println("receive the msg: " + msg.getContent());
-					msg.send(socket);
+					System.out.println("send the msg: " + msg.getContent());
+					msg.send(socketToSlave);
 					System.out.println("client send the msg to slave");
 
-					msg = Message.receive(socket);// waiting to receive what
+					msg = Message.receive(socketToSlave);// waiting to receive what
 													// port should be uploding
 													// file to slave. msg sent
 													// from slave
-					System.out
-							.println("the client receives a message from the slave");
+				
+					//close socket connecting slave main port
+					socketToSlave.close();
+					System.out.println("the client receives a message from the slave");
 					// connect the slave via the port assigned by the slave
-					socket = new Socket(add, Integer.parseInt(msg.getContent()
-							.toString()));
-					System.out
-							.println("client connect to slave via assigned port "
-									+ msg.getContent().toString());
+					Socket socketPutFile = new Socket(add, Integer.parseInt(msg.getContent().toString()));
+					System.out.println("client connect to slave via assigned port "+ msg.getContent().toString());
 
 					// Notice!!! this msg is used for test... need to change the
 					// MSG Type!
 					msg = new Message(Message.MSG_TYPE.FILE_PUT_START_TO_SLAVE,
 							fileName + "_blk" + count);
-					msg.send(socket);
+					msg.send(socketPutFile);
 					Thread.sleep(500);
 
-					new FileTransfer.Upload(fileName + "_blk" + count, socket)
-							.start();
+					new FileTransfer.Upload(fileName + "_blk" + count, socketPutFile).start();
 					count++;
 					System.out.println("Uploaded " + fileName + "_blk" + count);
 				}
@@ -167,6 +166,8 @@ public class ClientMain{
 
 		} catch (Exception e) {
 			System.out.println("Some wrong with put message " + e.toString());
+			e.printStackTrace();
+			
 		}
 
 	}

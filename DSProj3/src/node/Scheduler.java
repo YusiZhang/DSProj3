@@ -167,6 +167,7 @@ public class Scheduler extends Thread{
 			//inform the client
 			try {
 				Socket socket1 = new Socket(curJob.getAddress(), curJob.getPort());
+				
 				System.out.print("Job done successfully! Transfer the job result to the client");
 				//read all reduce result files and send to client!!
 				ArrayList<String> jobResultFiles = new ArrayList<String>();
@@ -196,12 +197,9 @@ public class Scheduler extends Thread{
 					
 					/*for test!!!!!*/
 					Random random = new Random();
-//					int next = random.nextInt(3);
 					int next = random.nextInt(3);
 
-	//				int next = random.nextInt();
 					Thread.sleep(next * 2000);
-					/*for test only!!!!*/
 					
 					
 					new FileTransfer.Upload(str, resultSoc);

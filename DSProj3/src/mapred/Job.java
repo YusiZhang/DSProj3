@@ -4,6 +4,7 @@ import io.*;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import communication.Message;
 import communication.ReducerDoneMsg;
 import config.ParseConfig;
 import debug.Printer;
+import dfs.FileTransfer;
 
 public class Job implements Serializable{
 	protected int jobId;
@@ -34,7 +36,6 @@ public class Job implements Serializable{
 	public int finishedMapperTasks = 0;
 	public int finishedReducerTasks = 0;
 	public int curTaskId = 0;
-//	private ArrayList<String> ReducerOutputFile = new ArrayList<String>();
 	private ArrayList<SlaveInfo> reduceLists  = new ArrayList<SlaveInfo>();
 	public HashMap<Text, FixValue> reduceOutputMap = new HashMap<Text, FixValue>();
 	
@@ -88,15 +89,18 @@ public class Job implements Serializable{
 			conf = new ParseConfig(config);
 			//connect to master
 			Socket socket = new Socket(conf.MasterIP, conf.MasterMainPort);
-			System.out.println(this.getMapperClass());
+			System.out.println("submitting ..."+this.getMapperClass());
 			
 			msg = new Message(Message.MSG_TYPE.NEW_JOB,this);
 			msg.send(socket);
 			
-			msg = Message.receive(socket);
-			handleMsgFromMaster(msg);
+			ServerSocket listener = new ServerSocket(conf.ClientPort);
+			Socket resultSoc = listener.accept();
+			
+			msg = Message.receive(resultSoc);
+			handleMsgFromMaster(msg,resultSoc);
 			//closes the socket
-			socket.close();
+//			socket.close();
 			
 		} catch (Exception e) {
 			System.out.println("fail to submit the job to master!");
@@ -104,7 +108,7 @@ public class Job implements Serializable{
 		}
 	}
 	
-	public void handleMsgFromMaster(Message msg) {
+	public void handleMsgFromMaster(Message msg,Socket socket) {
 		switch(msg.getType()){
 			case JOB_COMP:
 				
@@ -113,6 +117,7 @@ public class Job implements Serializable{
 //				Printer.printT(result);
 				ArrayList<String> resultFiles = (ArrayList<String>) msg.getContent();
 				Printer.printC(resultFiles);
+				new FileTransfer.Download(jobName+"result",socket , ParseConfig.ChunkSize);
 				System.out.println("Job "+jobName+"completed sucessfully!");
 				break;
 				

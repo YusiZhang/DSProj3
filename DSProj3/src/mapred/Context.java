@@ -38,9 +38,10 @@ public class Context implements Serializable{
 	//contraints
 	public void write(Text key, FixValue value) {
 		PrintWriter writer = writerList.get(key.hashCode() % reduceSize);
+//		System.out.println("printer:"+(writer.toString()));
 		writer.println(key.getValue() + ":" + value.getValue());
 		/*for test*/
-		System.out.print("write: /t" + writer.toString());
+		System.out.println("write:" + key.getValue() + ":" + value.getValue());
 	}
 	
 	public void close(){
