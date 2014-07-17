@@ -106,7 +106,7 @@ public class PerformReduce extends Thread {
 		
 		/*for test!!!!!*/
 		Random random = new Random();
-		int next = random.nextInt();
+		int next = random.nextInt(3);
 		Thread.sleep(next * 2000);
 		/*for test only!!!!*/
 		

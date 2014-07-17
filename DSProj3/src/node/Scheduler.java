@@ -193,7 +193,10 @@ public class Scheduler extends Thread{
 					
 					/*for test!!!!!*/
 					Random random = new Random();
-					int next = random.nextInt();
+//					int next = random.nextInt(3);
+					int next = random.nextInt(3);
+
+	//				int next = random.nextInt();
 					Thread.sleep(next * 2000);
 					/*for test only!!!!*/
 					
