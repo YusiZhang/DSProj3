@@ -13,6 +13,7 @@ import java.util.*;
 //
 import communication.Message;
 import config.ParseConfig;
+import debug.Printer;
 import io.FixValue;
 import io.Text;
 import io.Writable;
@@ -41,6 +42,21 @@ public class PerformReduce extends Thread {
 
 	public PerformReduce(Task taskInfo){
 		this.taskInfo = taskInfo;
+		File folder = new File("src/");
+		File[] listOfFiles = folder.listFiles();
+		for (File file : listOfFiles) {
+		    if (file.isFile()) {
+		    	System.out.println("file in src name is:" +file.getName());
+		    	String[] parts = file.getName().split("_");
+		    	if(parts[0].equals(taskInfo.getJobId())&&parts[2].equals("Reduce")){
+		    		//add file name into mapper outputs
+		    		mapperOutputs.add(file.getName());
+		    		System.out.println("Right file!");
+		    	}else {
+		    		System.out.println("Wrong file!");
+		    	}
+		    }
+		}
 	}
 	
 	public void run() {
@@ -49,8 +65,7 @@ public class PerformReduce extends Thread {
 			// read all the mappers output file into one file
 			for (String mapperOutputFile : mapperOutputs) {
 				// FileReader fr;
-				BufferedReader br = new BufferedReader(new FileReader(
-						mapperOutputFile));
+				BufferedReader br = new BufferedReader(new FileReader(mapperOutputFile));
 				String line;
 				while ((line = br.readLine()) != null) {
 					KeyValuePair kvp = parseLine(line);
@@ -86,35 +101,17 @@ public class PerformReduce extends Thread {
 			Context context = new Context(1,((Integer)taskInfo.jobId).toString());
 
 			
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
+			System.out.println("internal error from perform reducer");
 			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		
 
 
 	}
 
-	private HashMap<Text, ArrayList<FixValue>> mergeKeyValuePairs(
-			ArrayList<KeyValuePair> pairs) {
+	private HashMap<Text, ArrayList<FixValue>> mergeKeyValuePairs(ArrayList<KeyValuePair> pairs) {
+		System.out.println("Merge starts");
 		HashMap<Text, ArrayList<FixValue>> reduceResult = new HashMap<Text, ArrayList<FixValue>>();
 		for (KeyValuePair kvp : pairs) {
 			if (reduceResult.containsKey(kvp.key)) {
@@ -125,13 +122,17 @@ public class PerformReduce extends Thread {
 				reduceResult.get(kvp.key).add(kvp.value);
 			}
 		}
+		System.out.println("Merge ends");
+		/*for test*/
+		Printer.printT(reduceResult);
 		return reduceResult;
 
 	}
 
 	private void sortKeyValuePairs(ArrayList<KeyValuePair> pairs) {
+		System.out.println("sort starts");
 		Collections.sort(pairs);
-
+		System.out.println("sort ends");
 	}
 
 	private KeyValuePair parseLine(String line) {
