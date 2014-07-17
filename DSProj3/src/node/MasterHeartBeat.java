@@ -13,9 +13,10 @@ public class MasterHeartBeat extends Thread {
 
 			Message msg = new Message(Message.MSG_TYPE.KEEP_ALIVE, null);
 			ParseConfig conf = MasterMain.conf;
-			ArrayList<SlaveInfo> failList = new ArrayList<SlaveInfo>();
+			
+			//ArrayList<SlaveInfo> failList = new ArrayList<SlaveInfo>();
 
-			for (SlaveInfo slave : MasterMain.slavePool.values()) {
+			for (SlaveInfo slave : Scheduler.slavePool.values()) {
 				try {
 					Socket socket = new Socket(slave.address,
 							conf.SlaveHeartBeatPort);
@@ -26,7 +27,7 @@ public class MasterHeartBeat extends Thread {
 					if (!msg.getType().equals(Message.MSG_TYPE.KEEP_ALIVE)) {
 						System.out.println("the slave " + slave.slaveId
 								+ " fails");
-						failList.add(slave);
+						Scheduler.failPool.put(slave.slaveId, slave);
 					}
 				} catch (Exception e) {
 					System.out.println("fail to connect the slave heart beat port");
@@ -34,9 +35,12 @@ public class MasterHeartBeat extends Thread {
 				}
 				
 			}
-			if (failList.size() > 0) {
-				MasterMain.handleDeadSlaves(failList);
-				
+			if (Scheduler.failPool.size() > 0) {
+				//remove the slaves from the master's scheduler
+				for (int i: Scheduler.failPool.keySet()) {
+					Scheduler.slavePool.remove(i);
+				}
+				Scheduler.failPool.clear();
 			}
 			
 			try {

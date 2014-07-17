@@ -25,7 +25,8 @@ public class Scheduler extends Thread{
 	//slave pool
 	public static ConcurrentHashMap<Integer,SlaveInfo> slavePool = new ConcurrentHashMap<Integer,SlaveInfo>();
 	//job pool
-	ConcurrentHashMap<Integer, SlaveInfo> failPool = new ConcurrentHashMap<Integer, SlaveInfo>();
+	public static ConcurrentHashMap<Integer, SlaveInfo> failPool = new ConcurrentHashMap<Integer, SlaveInfo>();
+
 	public static ConcurrentHashMap<Integer, Job> jobPool = new ConcurrentHashMap<Integer, Job>();
 	//file layout record key: slaveInfo value : fileName with blk id
 	public static ConcurrentHashMap<String,ArrayList<SlaveInfo>> fileLayout = new ConcurrentHashMap<String,ArrayList<SlaveInfo>>();

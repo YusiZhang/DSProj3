@@ -15,6 +15,6 @@ public class WordCountReducer extends Reducer {
 			sum += (Integer) val.getValue();
 		}
 		context.write(key, new FixValue(sum));
-		// context.write((Text) key, new IntWritable(wordCount));
+		
 	}
 }

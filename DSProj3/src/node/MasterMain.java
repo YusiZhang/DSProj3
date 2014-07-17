@@ -21,8 +21,9 @@ import config.ParseConfig;
 public class MasterMain {
 	
 	//table for slave info : socketAddr-slaveInfo
-	public static ConcurrentHashMap<Integer,SlaveInfo> slavePool = new ConcurrentHashMap<Integer, SlaveInfo>();
+	//public static ConcurrentHashMap<Integer,SlaveInfo> slavePool = new ConcurrentHashMap<Integer, SlaveInfo>();
 	
+	//public static ConcurrentHashMap<Integer,SlaveInfo> failPool = new ConcurrentHashMap<Integer, SlaveInfo>();
 	//currently used port
 	public static int curPort;
 	public static ParseConfig conf;
@@ -45,8 +46,5 @@ public class MasterMain {
 		MasterHeartBeat heartbeat = new MasterHeartBeat();
 		heartbeat.start();
 	}
-	public static void handleDeadSlaves(ArrayList<SlaveInfo> failList) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }
