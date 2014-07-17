@@ -12,15 +12,16 @@ import mapred.Job;
 public class WordCountExample {
 
 	 public static void main(String[] args) throws Exception {
+		 /*args[0]: src/ConfigFile.txt 	arg[1]: input file name args[2]: output file name*/
 //	    JobConf conf = new JobConf();
 //	    Job job = new Job(conf, "wordcount");
-	   
+		new ParseConfig(args[0]);
 	    Job job = new Job("wordcount");
 //	    job.setOutputKeyClass(Text.class);
 //	    job.setOutputValueClass(IntWritable.class);
 	        
-	    job.setMapperClass("WordCountMap");
-	    job.setReducerClass("WordCountReduce");
+	    job.setMapperClass("WordCountMaper");
+	    job.setReducerClass("WordCountReducer");
 	        
 //	    job.setInputFormatClass(TextInputFormat.class);
 //	    job.setOutputFormatClass(TextOutputFormat.class);
@@ -30,6 +31,7 @@ public class WordCountExample {
 	    
 	    job.setInputFileName(args[1]);
 	    job.setOutputFileName(args[2]);
+	    job.setReducerTaskSplits(ParseConfig.ReducerTaskSplits);
 	    /*copy file from path to dfs*/
 	    Socket socket = new Socket(ParseConfig.MasterIP, ParseConfig.MasterMainPort);
 	    ClientMain.putFileHandler(socket, job.getInputFileName());

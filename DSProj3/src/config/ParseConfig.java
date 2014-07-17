@@ -30,6 +30,8 @@ public class ParseConfig {
 	public static long ChunkSize;
 	//number of file replica
 	public static int Replica;
+	//number of reducer
+	public static int ReducerTaskSplits;
 	public static int HearBeatFreq;
 	public static String FS_LOC = "dfs/";
 	public static String HTTP_PREFIX = "http://";
@@ -66,6 +68,7 @@ public class ParseConfig {
 			ChunkSize = Integer.parseInt(args.get("ChunkSize"));
 			HearBeatFreq = Integer.parseInt(args.get("HearBeatFreq"));
 			Replica = Integer.parseInt(args.get("Replica"));
+			ReducerTaskSplits = Integer.parseInt(args.get("ReducerTaskSplits"));
 			if(MasterIP == null) {
 				throw new Exception();
 			}

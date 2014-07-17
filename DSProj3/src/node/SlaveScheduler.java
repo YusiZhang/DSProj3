@@ -63,10 +63,10 @@ public class SlaveScheduler extends Thread {
 					e.printStackTrace();
 				}
 				break;
-			case NEW_MAP_TO_SLAVE:
+			case NEW_MAPPER:
 				newMapHandler(msg,socket);
 				break;
-			case NEW_REDUCE_TO_SLAVE:
+			case NEW_REDUCER:
 				newReduceHandler(msg,socket);
 				break;
 			case MAPRESULT_TO_REDUCE:
@@ -85,7 +85,7 @@ public class SlaveScheduler extends Thread {
 	 * download reduce files from other nodes
 	 */
 	private void downloadReduceResult(Message msg, Socket socket) {
-		System.out.println("receive results from maper");
+		System.out.println("receive results from mapper");
 		if(msg.getContent().toString() != null){
 			new FileTransfer.Download(msg.getContent().toString(),socket,conf.ChunkSize).start();
 		}

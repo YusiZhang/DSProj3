@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import communication.Message;
 import communication.Message.MSG_TYPE;
@@ -44,6 +45,14 @@ public class PerformMap extends Thread{
 			//prepare and perform map function
 			performMapper();
 			//send files to reducers
+			
+			/*for test!!!!!*/
+			Random random = new Random();
+			int next = random.nextInt();
+			Thread.sleep(next * 2000);
+			/*for test only!!!!*/
+			
+			
 			sendFiles();
 			//send success ack to master
 			sendSuccess();
@@ -65,6 +74,8 @@ public class PerformMap extends Thread{
 		Class mapClass = Class.forName("mapred."+mapperClass);
 		Constructor<?> objConstructor = mapClass.getConstructor();
 		Mapper mapper = (Mapper) objConstructor.newInstance();
+		
+		//filename is to be written later
 		String filename = this.taskInfo.getJobId()+"_"+this.taskInfo.getTaskId()+"_MapResult";
 		Context context = new Context(this.reducersList.size(), filename);
 		//process line by line

@@ -3,6 +3,7 @@ package node;
 import io.FixValue;
 import io.Text;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -24,6 +25,7 @@ import communication.Message;
 import communication.ReducerDoneMsg;
 import communication.WriteFileMsg;
 import config.ParseConfig;
+import dfs.FileTransfer;
 
 public class Scheduler extends Thread{
 	//slave pool
@@ -120,23 +122,26 @@ public class Scheduler extends Thread{
 			
 			case MAPPER_DONE:
 				try {
-					Job job = (Job) msg.getContent();
+					Task task = (Task) msg.getContent();
+					Job job = jobPool.get(task.getJobId());
 					job.finishedMapperTasks++;
 					//if all the mapper tasks sucess, assign the reducer tasks
 					if (job.finishedMapperTasks == job.getMapperTaskSplits()){
 						System.out.println("All the mapper task of "+job.getJobName()+" are done!");
+						
 						submitReduceJob(job);
-					}
+					}else 
+					System.out.println("mappers of this job haven't been all done");
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				break;
 			
 			case REDUCER_DONE:
 			{
-				reducerDoneHandler(msg);
+				reducerDoneHandler(msg,socket);
 			}
+			
 			default:
 				break;
 			}
@@ -144,12 +149,16 @@ public class Scheduler extends Thread{
 		}
 	}
 
-	private void reducerDoneHandler(Message msg) {
+	private void reducerDoneHandler(Message msg,Socket socket) {
 		ReducerDoneMsg reducerDoneMsg = (ReducerDoneMsg) msg.getContent();
 		Job curJob = jobPool.get(reducerDoneMsg.task.getJobId());
 		curJob.finishedReducerTasks++;
 		
-		mergeFile(curJob, reducerDoneMsg.ReduceResultMap);
+//		mergeFile(curJob, reducerDoneMsg.ReduceResultMap);
+		ReducerDoneMsg content = (ReducerDoneMsg) msg.getContent();
+		new FileTransfer.Download(content.fileName, socket, MasterMain.conf.ChunkSize).start();
+		
+		
 		
 		if (curJob.finishedReducerTasks == curJob.getReducerTaskSplits()) {
 			System.out.println("All the reducer task of "+curJob.getJobName()+" are done!");
@@ -158,18 +167,47 @@ public class Scheduler extends Thread{
 			try {
 				Socket socket1 = new Socket(curJob.getAddress(), curJob.getPort());
 				System.out.print("Job done successfully! Transfer the job result to the client");
-				new Message(Message.MSG_TYPE.JOB_COMP, curJob.reduceOutputMap).send(socket1);
+				//read all reduce result files and send to client!!
+				ArrayList<String> jobResultFiles = new ArrayList<String>();
+				File folder = new File("src/");
+				File[] listOfFiles = folder.listFiles();
+				for (File file : listOfFiles) {
+				    if (file.isFile()) {
+				    	System.out.println("file in src name is:" +file.getName());
+				    	String[] parts = file.getName().split("_");
+				    	if(parts[0].equals(reducerDoneMsg.task.getJobId())&&parts[2].equals("reduceResult")){
+				    		//add file name into mapper outputs
+				    		jobResultFiles.add(file.getName());
+				    		System.out.println("Right file!");
+				    	}else {
+				    		System.out.println("Wrong file!");
+				    	}
+				    }
+				}
 				
-			} catch (UnknownHostException e) {
-				System.out.println("reducerDoneHandler fails!");
-				e.printStackTrace();
-			} catch (IOException e) {
-				System.out.println("reducerDoneHandler fails!");
-				e.printStackTrace();
+				new Message(Message.MSG_TYPE.JOB_COMP, jobResultFiles).send(socket1);
+				
+				
+				//send each result files to client
+				for(String str : jobResultFiles){
+					
+					/*for test!!!!!*/
+					Random random = new Random();
+					int next = random.nextInt();
+					Thread.sleep(next * 2000);
+					/*for test only!!!!*/
+					
+					
+					new FileTransfer.Upload(str, socket1);
+				}
+				
+				
+				
+				
 			} catch (Exception e) {
 				System.out.println("reducerDoneHandler fails!");
 				e.printStackTrace();
-			}
+			} 
 			
 		}
 		
@@ -190,11 +228,16 @@ public class Scheduler extends Thread{
 		
 		setReduceList(job);
 		
+		//find files on what slaves
 		HashMap<String, SlaveInfo> fileToSlave = new HashMap<String, SlaveInfo>(); 
 		String baseFileName = job.getInputFileName();
 		int length = baseFileName.length();
 		for(String fileName : fileLayout.keySet()){
+			System.out.println("file name from job"+baseFileName);
 			if(fileName.substring(0, length).equals(baseFileName)){
+				
+				System.out.println("file name from dfs"+fileName);
+				
 				fileToSlave.put(fileName,fileLayout.get(fileName).get(0));
 			}
 		}
@@ -210,7 +253,7 @@ public class Scheduler extends Thread{
 		//assign the tasks to different slaves
 		//send file name to each slaves via socket
 		jobToMapper.put(job, new ArrayList<Task>());
-		int countTaskSplit = 0;
+		
 		for(String file : fileToSlave.keySet()){
 			SlaveInfo curSlave = fileToSlave.get(file);
 			try {
@@ -218,6 +261,7 @@ public class Scheduler extends Thread{
 				Socket soc =  new Socket(curSlave.address.getHostName(),MasterMain.conf.SlaveMainPort);
 				//generate a new task
 				Task task = new Task();
+				task.setTaskId(job.curTaskId++);
 				task.setInputFileName(file);
 				task.setTaskClass(job.getMapperClass());
 				task.setJobName(job.getJobName());
@@ -226,22 +270,20 @@ public class Scheduler extends Thread{
 				task.setInputFileName(file);
 				jobToMapper.get(job).add(task);
 				TaskToSlave.put(task, curSlave);
-				countTaskSplit++;
+				
 				//send the new task to the slave
-				Message taskMsg = new Message(Message.MSG_TYPE.NEW_TASK, task);
+				Message taskMsg = new Message(Message.MSG_TYPE.NEW_MAPPER, task);
 				
 				taskMsg.send(soc);
+				System.out.println("");
+				soc.close();
 				
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+				
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			} 
 		}
-		job.setMapperTaskSplits(countTaskSplit);
+		job.setMapperTaskSplits(fileToSlave.keySet().size());
 	}
 
 	
@@ -249,13 +291,17 @@ public class Scheduler extends Thread{
 	private void setReduceList(Job job) {
 		for (int i = 0; i < job.getReducerTaskSplits(); i++) {
 			
-			if (slavePool.containsKey(i) && failPool.containsKey(i)) {
+			job.getReduceLists().add(slavePool.get(i));
+			
+			/* 
+			if (!(slavePool.containsKey(i) && failPool.containsKey(i))) {
 				System.out.println("We only have "+ i + " nodes.");
 				break;
 			}
 			else {
 				job.getReduceLists().add(slavePool.get(i));
 			}
+			*/
 		}
 		
 	}
@@ -277,20 +323,16 @@ public class Scheduler extends Thread{
 			try {
 				soc = new Socket(curSlave.address.getHostName(),MasterMain.conf.SlaveMainPort);
 				
-				Message taskMsg = new Message(Message.MSG_TYPE.NEW_TASK,task);
+				Message taskMsg = new Message(Message.MSG_TYPE.NEW_REDUCER,task);
 				taskMsg.send(soc);
+				System.out.println("finish submitReduceJob!");
 				
 				
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				soc.close();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}	
+			}
+					
 		}
 	}
 	

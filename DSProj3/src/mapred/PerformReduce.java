@@ -4,16 +4,22 @@ package mapred;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 //import java.net.Socket;
 //import java.net.UnknownHostException;
 //import java.io.FileReader;
 import java.util.*;
 
+import node.SlaveMain;
 //import java.util.HashMap;
 //
 import communication.Message;
+import communication.Message.MSG_TYPE;
+import communication.ReducerDoneMsg;
 import config.ParseConfig;
 import debug.Printer;
+import dfs.FileTransfer;
 import io.FixValue;
 import io.Text;
 import io.Writable;
@@ -83,12 +89,31 @@ public class PerformReduce extends Thread {
 			performReducer(reduceResult);
 
 			// send the result back to master
+			sendResultToMaster(""+taskInfo.getJobId());
 
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} 
+	}
+
+	private void sendResultToMaster(String uploadFile) throws Exception {
+		Socket soc = new Socket(SlaveMain.conf.MasterIP,SlaveMain.conf.MasterMainPort);
+		String fileName = taskInfo.getJobId() +"_"+ taskInfo.getTaskId() + "_reduceResult";
+		ReducerDoneMsg replyContent = new ReducerDoneMsg(taskInfo, null);
+		replyContent.fileName = fileName;
+		
+		Message msg = new Message(MSG_TYPE.REDUCER_DONE, replyContent);
+		
+		/*for test!!!!!*/
+		Random random = new Random();
+		int next = random.nextInt();
+		Thread.sleep(next * 2000);
+		/*for test only!!!!*/
+		
+		new FileTransfer.Upload(fileName, soc).start();;
+		
+		
+		
 	}
 
 	private void performReducer(HashMap<Text, ArrayList<FixValue>> reduceResult) {
@@ -98,8 +123,15 @@ public class PerformReduce extends Thread {
 			reduceClass = Class.forName("mapred." + taskInfo.getReducerClass());
 			Constructor<?> objConstructor = reduceClass.getConstructor();
 			Reducer reducer = (Reducer) objConstructor.newInstance();
+			
 			Context context = new Context(1,((Integer)taskInfo.jobId).toString());
-
+			
+			
+			for(Text key : reduceResult.keySet()) {
+				reducer.reduce(key, reduceResult.get(key), context);
+			}
+			
+			System.out.println("perform reduce ends");
 			
 		} catch (Exception e) {
 			System.out.println("internal error from perform reducer");

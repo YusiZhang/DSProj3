@@ -11,7 +11,9 @@ import java.util.HashMap;
 import node.Scheduler;
 import node.SlaveInfo;
 import communication.Message;
+import communication.ReducerDoneMsg;
 import config.ParseConfig;
+import debug.Printer;
 
 public class Job implements Serializable{
 	protected int jobId;
@@ -29,8 +31,9 @@ public class Job implements Serializable{
 	private int port;
 	private int mapperTaskSplits;
 	private int reducerTaskSplits;
-	public int finishedMapperTasks;
-	public int finishedReducerTasks;
+	public int finishedMapperTasks = 0;
+	public int finishedReducerTasks = 0;
+	public int curTaskId = 0;
 //	private ArrayList<String> ReducerOutputFile = new ArrayList<String>();
 	private ArrayList<SlaveInfo> reduceLists  = new ArrayList<SlaveInfo>();
 	public HashMap<Text, FixValue> reduceOutputMap = new HashMap<Text, FixValue>();
@@ -102,6 +105,12 @@ public class Job implements Serializable{
 	public void handleMsgFromMaster(Message msg) {
 		switch(msg.getType()){
 			case JOB_COMP:
+				
+				//write file to local
+//				HashMap<Text, FixValue> result = (HashMap<Text, FixValue>) msg.getContent();
+//				Printer.printT(result);
+				ArrayList<String> resultFiles = (ArrayList<String>) msg.getContent();
+				Printer.printC(resultFiles);
 				System.out.println("Job "+jobName+"completed sucessfully!");
 				break;
 				
