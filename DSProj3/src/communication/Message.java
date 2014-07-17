@@ -60,12 +60,8 @@ public class Message implements Serializable{
 	public static Message receive(Socket soc) throws ClassNotFoundException, Exception {
 		Message msg = null;
 		Socket socket = soc;
-		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-		out.flush();
 		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 		msg = (Message)in.readObject();
-//		System.out.println("i am closing...");
-//		in.close();
 		return msg;
 	}
 

@@ -14,7 +14,13 @@ public class WordCountMaper extends Mapper{
 		String curLine = value.getValue();	
 		String[] wordArray = curLine.split("\\s+");
 		for(String word : wordArray) {
-			context.write(new Text(word), fixValue);
+			
+			if(word.equals("") || word.equals(" ")){
+				continue;
+			}else{
+				context.write(new Text(word), fixValue);
+			}
+			
 		}
 		
 	}
