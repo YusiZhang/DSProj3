@@ -94,11 +94,16 @@ public class Job implements Serializable{
 			msg = new Message(Message.MSG_TYPE.NEW_JOB,this);
 			msg.send(socket);
 			
-			ServerSocket listener = new ServerSocket(conf.ClientPort);
-			Socket resultSoc = listener.accept();
+			System.out.println("listening... " + conf.ClientMainPort);
+			ServerSocket listener = new ServerSocket(conf.ClientMainPort);
+			while(true){
+				
+				Socket resultSoc = listener.accept();
+				System.out.println("Soc received!! " + resultSoc.getRemoteSocketAddress());	
+				msg = Message.receive(resultSoc);
+				handleMsgFromMaster(msg,resultSoc);
+			}
 			
-			msg = Message.receive(resultSoc);
-			handleMsgFromMaster(msg,resultSoc);
 			//closes the socket
 //			socket.close();
 			
@@ -117,7 +122,7 @@ public class Job implements Serializable{
 //				Printer.printT(result);
 				ArrayList<String> resultFiles = (ArrayList<String>) msg.getContent();
 				Printer.printC(resultFiles);
-				new FileTransfer.Download(jobName+"result",socket , ParseConfig.ChunkSize);
+				new FileTransfer.Download(jobName+"result",socket , ParseConfig.ChunkSize).start();
 				System.out.println("Job "+jobName+"completed sucessfully!");
 				break;
 				
