@@ -64,6 +64,7 @@ public class Scheduler extends Thread{
 				System.out.println("the scheduler receives a "+msg.getType()+" messge " + msg.getContent().toString());
 				
 			} catch (Exception e) {
+				e.printStackTrace();
 				System.out.println("There is no message " + e.toString());
 				continue;
 			}
@@ -185,7 +186,9 @@ public class Scheduler extends Thread{
 				    }
 				}
 				
-				new Message(Message.MSG_TYPE.JOB_COMP, jobResultFiles).send(socket1);
+//				new Message(Message.MSG_TYPE.JOB_COMP, jobResultFiles).send(socket1);
+				Socket resultSoc = new Socket(curJob.getAddress(),MasterMain.conf.ClientMainPort);
+				new Message(Message.MSG_TYPE.JOB_COMP, jobResultFiles).send(resultSoc);
 				
 				
 				//send each result files to client
@@ -201,7 +204,7 @@ public class Scheduler extends Thread{
 					/*for test only!!!!*/
 					
 					
-					new FileTransfer.Upload(str, socket1);
+					new FileTransfer.Upload(str, resultSoc);
 				}
 				
 				

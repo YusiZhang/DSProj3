@@ -30,6 +30,8 @@ public class ParseConfig {
 	public static long ChunkSize;
 	//number of file replica
 	public static int Replica;
+	//port number of client
+	public static int ClientMainPort;
 	//number of reducer
 	public static int ReducerTaskSplits;
 	public static int HearBeatFreq;
@@ -69,6 +71,7 @@ public class ParseConfig {
 			HearBeatFreq = Integer.parseInt(args.get("HearBeatFreq"));
 			Replica = Integer.parseInt(args.get("Replica"));
 			ReducerTaskSplits = Integer.parseInt(args.get("ReducerTaskSplits"));
+			ClientMainPort = Integer.parseInt(args.get("ClientMainPort"));
 			if(MasterIP == null) {
 				throw new Exception();
 			}
