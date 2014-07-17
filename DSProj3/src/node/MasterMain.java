@@ -44,7 +44,7 @@ public class MasterMain {
 		scheduler.start();
 		
 		MasterHeartBeat heartbeat = new MasterHeartBeat();
-		heartbeat.start();
+//		heartbeat.start();
 	}
 	
 }

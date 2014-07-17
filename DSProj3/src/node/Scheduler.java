@@ -222,6 +222,7 @@ public class Scheduler extends Thread{
 		job.setAddress(socket.getInetAddress());
 		job.setPort(socket.getPort());
 		System.out.println("Start the map job!");
+		System.out.println("Job Mapper class is " + job.getMapperClass());
 		job.setJobId();
 		
 		jobPool.put(job.getJobId(), job);
@@ -246,7 +247,7 @@ public class Scheduler extends Thread{
 		 * for test
 		 */
 		for(String file : fileToSlave.keySet()){
-			System.out.println(file + "is on " + fileToSlave.get(file).slaveId);
+			System.out.println(file + " is on " + fileToSlave.get(file).slaveId);
 		}
 		
 	

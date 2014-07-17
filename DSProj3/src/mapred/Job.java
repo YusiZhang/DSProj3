@@ -88,6 +88,8 @@ public class Job implements Serializable{
 			conf = new ParseConfig(config);
 			//connect to master
 			Socket socket = new Socket(conf.MasterIP, conf.MasterMainPort);
+			System.out.println(this.getMapperClass());
+			
 			msg = new Message(Message.MSG_TYPE.NEW_JOB,this);
 			msg.send(socket);
 			

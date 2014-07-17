@@ -8,5 +8,5 @@ ClientIP=127.0.0.1;
 ClientPort=1000;
 ChunkSize=2896;
 HearBeatFreq=5000;
-Replica=1;
+Replica=0;
 ReducerTaskSplits=1;
