@@ -268,6 +268,7 @@ public class Scheduler extends Thread{
 				task.setTaskId(job.curTaskId++);
 				task.setInputFileName(file);
 				task.setMapperClass(job.getMapperClass());
+				System.out.println("mapper class in submit is " + job.getMapperClass());
 				task.setJobName(job.getJobName());
 				task.setJobId(job.getJobId());
 				task.setReduceLists(job.getReduceLists());
