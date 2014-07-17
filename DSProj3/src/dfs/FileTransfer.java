@@ -47,7 +47,7 @@ public class FileTransfer {
 				outToClient.write(mybytearray, 0, mybytearray.length);
                 outToClient.flush();
                 outToClient.close();
-			    this.socket.close();
+//			    this.socket.close();
 			    System.out.println("Upload successed!" + fileName);
 			    
 				
@@ -92,7 +92,7 @@ public class FileTransfer {
 			this.fileName = fileName;
 			this.socket = socket;
 			this.chunkSize = chunkSize;
-			mybytearray = new byte[(int) (chunkSize * 1000)];
+			mybytearray = new byte[(int) (chunkSize * 5)];
 		}
 
 		public void run() {

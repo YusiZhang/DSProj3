@@ -341,7 +341,7 @@ public class Scheduler extends Thread{
 			task.setReducerClass(job.getReducerClass());
 			task.setInputFileName(((Integer)job.getJobId()).toString());
 			task.setOutputFileName(job.getOutputFileName());
-			
+			task.setTaskId(job.curTaskId++);
 			//connect to the slave
 			Socket soc;
 			try {

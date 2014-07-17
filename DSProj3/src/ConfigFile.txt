@@ -10,4 +10,4 @@ ClientPort=1000;
 ChunkSize=99999;
 HearBeatFreq=5000;
 Replica=0;
-ReducerTaskSplits=1;
+ReducerTaskSplits=2;
