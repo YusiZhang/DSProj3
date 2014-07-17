@@ -49,21 +49,27 @@ public class PerformReduce extends Thread {
 	public PerformReduce(Task taskInfo){
 		this.taskInfo = taskInfo;
 		this.mapperOutputs = new ArrayList<String>();
-		File folder = new File("/");
+		File folder = new File("./");
 		File[] listOfFiles = folder.listFiles();
+		System.out.println("list of files"+listOfFiles.length);
 		for (File file : listOfFiles) {
-		    if (file.isFile()) {
-		    	System.out.println("file in src name is:" +file.getName());
+//		    if (file.isFile()) {
+		    	
+		    	System.out.println("file in src name is:" +file.getAbsoluteFile());
 		    	String[] parts = file.getName().split("_");
-		    	if(parts[0].equals(taskInfo.getJobId())&&parts[2].equals("Reduce")){
+//		    	if(parts[0].equals(taskInfo.getJobId())&&parts[2].equals("Reduce")){
+		    	if (file.getName().equals("0_0_Reduce") || file.getName().equals("0_0_MapResult0") ){
+		    		if (file.getName().equals("0_0_Reduce") )
+		    			System.out.println("0_0_Reduce is right");
 		    		//add file name into mapper outputs
 		    		mapperOutputs.add(file.getName());
-		    		System.out.println("Right file!");
+		    		System.out.println("perform reduce Right file!");
 		    	}else {
-		    		System.out.println("Wrong file!");
+		    		System.out.println("perform reduce Wrong file!");
 		    	}
 		    }
-		}
+//		}
+		System.out.println("perform reduce "+mapperOutputs.size());
 	}
 	
 	public void run() {
@@ -89,6 +95,7 @@ public class PerformReduce extends Thread {
 			// performa reducer()
 			performReducer(reduceResult);
 
+			System.out.println("here the reduceResult size: "+reduceResult.size());
 			// send the result back to master
 			sendResultToMaster(""+taskInfo.getJobId());
 
@@ -168,6 +175,7 @@ public class PerformReduce extends Thread {
 		System.out.println("Merge starts");
 		HashMap<Text, ArrayList<FixValue>> reduceResult = new HashMap<Text, ArrayList<FixValue>>();
 		for (KeyValuePair kvp : pairs) {
+			//System.out.println("key = "+kvp.key + " value = "+kvp.value);
 			if (reduceResult.containsKey(kvp.key)) {
 				reduceResult.get(kvp.key).add(kvp.value);
 			} else {
@@ -176,16 +184,19 @@ public class PerformReduce extends Thread {
 				reduceResult.get(kvp.key).add(kvp.value);
 			}
 		}
+		System.out.println("the size of the reduceResult arraylist: "+reduceResult.size());
 		System.out.println("Merge ends");
 		/*for test*/
-		Printer.printT(reduceResult);
+//		Printer.printT(reduceResult);
 		return reduceResult;
 
 	}
 
 	private void sortKeyValuePairs(ArrayList<KeyValuePair> pairs) {
 		System.out.println("sort starts");
+		System.out.println("before sort, pairs size: "+pairs.size());
 		Collections.sort(pairs);
+		System.out.println("after sort, pairs size: "+pairs.size());
 		System.out.println("sort ends");
 	}
 
