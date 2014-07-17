@@ -23,7 +23,7 @@ import dfs.Splitter;
  * 2. split file
  * 3. get file
  */
-public class ClientMain {
+public class ClientMain{
 	public static enum CMD {
 
 		put
@@ -81,8 +81,7 @@ public class ClientMain {
 			msg = Message.receive(socket);
 			System.out.println("the client receives a message from the master");
 
-			ArrayList<SlaveInfo> slaveList = (ArrayList<SlaveInfo>) msg
-					.getContent();
+			ArrayList<SlaveInfo> slaveList = (ArrayList<SlaveInfo>) msg.getContent();
 
 			// connect the slaves via socket
 			for (SlaveInfo s : slaveList) {

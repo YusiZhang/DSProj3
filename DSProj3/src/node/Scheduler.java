@@ -1,5 +1,8 @@
 package node;
 
+import io.FixValue;
+import io.Text;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -18,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import mapred.Job;
 import mapred.Task;
 import communication.Message;
+import communication.ReducerDoneMsg;
 import communication.WriteFileMsg;
 import config.ParseConfig;
 
@@ -54,6 +58,7 @@ public class Scheduler extends Thread{
 				socket = listener.accept();
 				conf = MasterMain.conf;
 				msg = Message.receive(socket);
+				
 				System.out.println("the scheduler receives a "+msg.getType()+" messge " + msg.getContent().toString());
 				
 			} catch (Exception e) {
@@ -108,7 +113,7 @@ public class Scheduler extends Thread{
 				break;
 				
 			case NEW_JOB:
-				
+				System.out.println("submitting a job from the master to mapper nodes!");
 				submitMapperJob((Job) msg.getContent(), socket);
 				
 				break;
@@ -130,13 +135,7 @@ public class Scheduler extends Thread{
 			
 			case REDUCER_DONE:
 			{
-				Job job = (Job)msg.getContent();
-				job.finishedReducerTasks++;
-				mergeFile(job);
-				if (job.finishedReducerTasks == job.getReducerTaskSplits()) {
-					System.out.println("All the reducer task of "+job.getJobName()+" are done!");
-					
-				}
+				reducerDoneHandler(msg);
 			}
 			default:
 				break;
@@ -145,12 +144,45 @@ public class Scheduler extends Thread{
 		}
 	}
 
-	private void mergeFile(Job job) {
+	private void reducerDoneHandler(Message msg) {
+		ReducerDoneMsg reducerDoneMsg = (ReducerDoneMsg) msg.getContent();
+		Job curJob = jobPool.get(reducerDoneMsg.task.getJobId());
+		curJob.finishedReducerTasks++;
 		
+		mergeFile(curJob, reducerDoneMsg.ReduceResultMap);
+		
+		if (curJob.finishedReducerTasks == curJob.getReducerTaskSplits()) {
+			System.out.println("All the reducer task of "+curJob.getJobName()+" are done!");
+			
+			//inform the client
+			try {
+				Socket socket1 = new Socket(curJob.getAddress(), curJob.getPort());
+				System.out.print("Job done successfully! Transfer the job result to the client");
+				new Message(Message.MSG_TYPE.JOB_COMP, curJob.reduceOutputMap).send(socket1);
+				
+			} catch (UnknownHostException e) {
+				System.out.println("reducerDoneHandler fails!");
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("reducerDoneHandler fails!");
+				e.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("reducerDoneHandler fails!");
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
+
+	private void mergeFile(Job job, HashMap<Text, FixValue> reduceResultMap) {
+		job.reduceOutputMap.putAll(reduceResultMap);
 		
 	}
 
 	private void submitMapperJob(Job job, Socket socket) {
+		job.setAddress(socket.getInetAddress());
+		job.setPort(socket.getPort());
 		System.out.println("Start the map job!");
 		job.setJobId();
 		
@@ -244,7 +276,7 @@ public class Scheduler extends Thread{
 			Socket soc;
 			try {
 				soc = new Socket(curSlave.address.getHostName(),MasterMain.conf.SlaveMainPort);
-
+				
 				Message taskMsg = new Message(Message.MSG_TYPE.NEW_TASK,task);
 				taskMsg.send(soc);
 				

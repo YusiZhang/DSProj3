@@ -1,8 +1,12 @@
 package mapred;
 
+import io.*;
+
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import node.Scheduler;
 import node.SlaveInfo;
@@ -21,12 +25,16 @@ public class Job implements Serializable{
 	protected String inputPath;
 	protected String outputPath;
 	protected Message msg;
+	private InetAddress address;
+	private int port;
 	private int mapperTaskSplits;
 	private int reducerTaskSplits;
 	public int finishedMapperTasks;
 	public int finishedReducerTasks;
-	private ArrayList<String> ReducerOutputFile = new ArrayList<String>();
+//	private ArrayList<String> ReducerOutputFile = new ArrayList<String>();
 	private ArrayList<SlaveInfo> reduceLists  = new ArrayList<SlaveInfo>();
+	public HashMap<Text, FixValue> reduceOutputMap = new HashMap<Text, FixValue>();
+	
 	public Job(){}
 	public Job(String jobName) {
 		this.jobName = jobName;
@@ -160,11 +168,23 @@ public class Job implements Serializable{
 	public void setReduceLists(ArrayList<SlaveInfo> reduceLists) {
 		this.reduceLists = reduceLists;
 	}
-	public ArrayList<String> getReducerOutputFile() {
-		return ReducerOutputFile;
+//	public ArrayList<String> getReducerOutputFile() {
+//		return ReducerOutputFile;
+//	}
+//	public void setReducerOutputFile(ArrayList<String> reducerOutputFile) {
+//		ReducerOutputFile = reducerOutputFile;
+//	}
+	public InetAddress getAddress() {
+		return address;
 	}
-	public void setReducerOutputFile(ArrayList<String> reducerOutputFile) {
-		ReducerOutputFile = reducerOutputFile;
+	public void setAddress(InetAddress address) {
+		this.address = address;
+	}
+	public int getPort() {
+		return port;
+	}
+	public void setPort(int port) {
+		this.port = port;
 	}
 	
 	

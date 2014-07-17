@@ -6,6 +6,10 @@ import java.io.Serializable;
  * And maintance filelayout table.
  */
 public class WriteFileMsg implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2480900280335261115L;
 	public String fileBaseName;
 	public int fileBlk;
 	public String fileName;

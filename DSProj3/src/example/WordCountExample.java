@@ -12,7 +12,7 @@ import mapred.Job;
 public class WordCountExample {
 
 	 public static void main(String[] args) throws Exception {
-	    JobConf conf = new JobConf();
+//	    JobConf conf = new JobConf();
 //	    Job job = new Job(conf, "wordcount");
 	   
 	    Job job = new Job("wordcount");

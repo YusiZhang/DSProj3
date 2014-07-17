@@ -22,6 +22,10 @@ public class ParseConfig {
 	public static int StartPort;
 	//master's end port of port pool
 	public static int EndPort;
+	
+	public static String ClientIP;
+	
+	public static int ClientPort;
 	//file blk chunk size
 	public static long ChunkSize;
 	//number of file replica
@@ -29,7 +33,7 @@ public class ParseConfig {
 	public static int HearBeatFreq;
 	public static String FS_LOC = "dfs/";
 	public static String HTTP_PREFIX = "http://";
-	
+
 	/*
 	 * Parse config file
 	 */
