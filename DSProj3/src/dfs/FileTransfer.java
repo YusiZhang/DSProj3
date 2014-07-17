@@ -45,11 +45,10 @@ public class FileTransfer {
 				BufferedInputStream bis = new BufferedInputStream(fis);
 				bis.read(mybytearray, 0, mybytearray.length);
 				outToClient.write(mybytearray, 0, mybytearray.length);
-				System.out.println("write successed!");
                 outToClient.flush();
                 outToClient.close();
 			    this.socket.close();
-			    System.out.println("Upload successed!");
+			    System.out.println("Upload successed!" + fileName);
 			    
 				
 				/*

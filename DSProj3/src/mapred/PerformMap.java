@@ -25,8 +25,10 @@ public class PerformMap extends Thread{
 	//baseFileName includes blk id
 	private String baseFileName;
 	private String mapperClass;
+	private Task taskInfo;
 	
 	public PerformMap(Task taskInfo){
+		this.taskInfo = taskInfo;
 		this.reducersList= taskInfo.getReduceLists();
 		this.baseFileName = taskInfo.getInputFileName();
 		this.mapperClass = taskInfo.getMapperClass();
@@ -55,15 +57,16 @@ public class PerformMap extends Thread{
 
 
 	/*
-	 *questions: what base file name is? 
+	 *basefilename is like file_blk0.txt 
+	 *filename : <jobid>_<taskid>_MapResult
 	 */
 	private void performMapper() throws Exception {
 		//prepare args for mapper
 		Class mapClass = Class.forName("mapred."+mapperClass);
 		Constructor<?> objConstructor = mapClass.getConstructor();
 		Mapper mapper = (Mapper) objConstructor.newInstance();
-		
-		Context context = new Context(this.reducersList.size(), this.baseFileName);
+		String filename = this.taskInfo.getJobId()+"_"+this.taskInfo.getTaskId()+"_MapResult";
+		Context context = new Context(this.reducersList.size(), filename);
 		//process line by line
 		FileReader fd = new FileReader(this.baseFileName);
         BufferedReader reader = new BufferedReader(fd);
@@ -80,25 +83,28 @@ public class PerformMap extends Thread{
 
 
 	/*
-	 * questions: what info send to master?
-	 * mapper_done or mapper_success?
+	 * send task info to master
+	 * mapper_done 
 	 */
 	private void sendSuccess() throws Exception {
-		Object content = new Object();
-		Message successMsg = new Message(MSG_TYPE.MAPPER_DONE, (Serializable) content);
+		Message successMsg = new Message(MSG_TYPE.MAPPER_DONE,this.taskInfo);
 		Socket soc = new Socket(SlaveMain.conf.MasterIP,SlaveMain.conf.MasterMainPort);
 		successMsg.send(soc);
 	}
 
 
 	/*
-	 * questions: except files, what others should be sent?
-	 * i.e. job id? (it may be included in baseFileName)
+	 * upload filename : <jobid>_<taskid>_MapResult
+	 * for download filename : <jobid>_<taskid>_Reduce
 	 */
 	private void sendFiles() throws Exception {
 		for(int i = 0; i < reducersList.size() ; i++) {
 			Socket soc = new Socket(reducersList.get(i).address,SlaveMain.conf.SlaveMainPort);
-			new FileTransfer.Upload(baseFileName+i, soc);
+			String downloadFile = this.taskInfo.getJobId()+"_"+this.taskInfo.getTaskId()+"_Reduce";
+			Message msg = new Message(MSG_TYPE.MAPRESULT_TO_REDUCE,downloadFile);
+			msg.send(soc);
+			new FileTransfer.Upload(this.taskInfo.getJobId()+"_"+this.taskInfo.getTaskId()+"_MapResult"+i, soc).start();
+			Thread.sleep(500);
 		}
 	}
 }

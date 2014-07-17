@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import mapred.PerformMap;
+import mapred.PerformReduce;
 import mapred.Task;
 import communication.Message;
 import config.ParseConfig;
@@ -68,6 +69,9 @@ public class SlaveScheduler extends Thread {
 			case NEW_REDUCE_TO_SLAVE:
 				newReduceHandler(msg,socket);
 				break;
+			case MAPRESULT_TO_REDUCE:
+				downloadReduceResult(msg,socket);
+				break;
 			default:
 				break;
 			}
@@ -78,10 +82,21 @@ public class SlaveScheduler extends Thread {
 	}
 	
 	/*
+	 * download reduce files from other nodes
+	 */
+	private void downloadReduceResult(Message msg, Socket socket) {
+		System.out.println("receive results from maper");
+		if(msg.getContent().toString() != null){
+			new FileTransfer.Download(msg.getContent().toString(),socket,conf.ChunkSize).start();
+		}
+	}
+
+	/*
 	 * Handle reduce task
 	 */
 	private void newReduceHandler(Message msg, Socket socket) {
-		
+		PerformReduce performReduce = new PerformReduce((Task)msg.getContent());  
+		performReduce.start();
 	}
 	
 	/*
@@ -90,6 +105,7 @@ public class SlaveScheduler extends Thread {
 	 */
 	private void newMapHandler(Message msg, Socket socket) {
 		PerformMap performMap = new PerformMap((Task) msg.getContent()); 
+		performMap.start();
 	}
 	
 	/*
