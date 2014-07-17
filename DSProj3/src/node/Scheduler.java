@@ -185,7 +185,7 @@ public class Scheduler extends Thread{
 				    }
 				}
 				
-				new Message(Message.MSG_TYPE.JOB_COMP, jobResultFiles).send(socket1);
+				new Message(Message.MSG_TYPE.JOB_COMP, "").send(socket1);
 				
 				
 				//send each result files to client

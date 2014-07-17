@@ -126,7 +126,7 @@ public class SlaveScheduler extends Thread {
 			reply.send(socket);
 			System.out.println("send the reply to client "
 					+ reply.getContent());
-			System.out.println("send the port number from the slave to the client");
+			System.out.println("send the port number from the slave to the client"+SlaveMain.curPort);
 
 			//create listener , wait for reply from client
 			ServerSocket slaveListener = new ServerSocket(SlaveMain.curPort);
