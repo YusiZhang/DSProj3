@@ -37,6 +37,7 @@ public class WordCountExample {
 	    ClientMain.putFileHandler(socket, job.getInputFileName());
 	    
 	    job.waitForCompletion(args[0]);
+
 	 }
 	       
 }
