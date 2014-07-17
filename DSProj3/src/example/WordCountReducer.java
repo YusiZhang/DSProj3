@@ -12,9 +12,9 @@ public class WordCountReducer extends Reducer {
 		int wordCount = 0;
 		int sum = 0;
 		for (FixValue val : values) {
-			sum += (Integer) val.getValue();
+			sum += Integer.parseInt(val.getValue().toString());
 		}
-		context.write(key, new FixValue(sum));
+		context.write(new Text(key.getValue()), new FixValue(sum));
 		
 	}
 }
