@@ -51,8 +51,9 @@ public class PerformMap extends Thread{
 			
 			/*for test!!!!!*/
 			Random random = new Random();
-			int next = random.nextInt();
-			Thread.sleep(next * 2000);
+			int next = random.nextInt(3);
+			System.out.println(next);
+			Thread.sleep(next * 1000);
 			/*for test only!!!!*/
 			
 			

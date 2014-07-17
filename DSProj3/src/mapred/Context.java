@@ -20,6 +20,7 @@ public class Context implements Serializable{
 	public Context(int reduceSize, String  baseName) {
 		this.reduceSize = reduceSize;
 		this.baseName = baseName;
+		this.writerList = new ArrayList<PrintWriter>();
 		initPrintWriter();
 	}
 
