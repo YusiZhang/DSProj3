@@ -96,7 +96,7 @@ public class Job implements Serializable{
 			msg = Message.receive(socket);
 			handleMsgFromMaster(msg);
 			//closes the socket
-			socket.close();
+//			socket.close();
 			
 		} catch (Exception e) {
 			System.out.println("fail to submit the job to master!");
