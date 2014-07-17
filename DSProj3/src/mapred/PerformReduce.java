@@ -120,7 +120,7 @@ public class PerformReduce extends Thread {
 		// prepare args for reducer
 		Class reduceClass;
 		try {
-			reduceClass = Class.forName("mapred." + taskInfo.getReducerClass());
+			reduceClass = Class.forName("example." + taskInfo.getReducerClass());
 			Constructor<?> objConstructor = reduceClass.getConstructor();
 			Reducer reducer = (Reducer) objConstructor.newInstance();
 			

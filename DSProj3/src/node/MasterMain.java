@@ -43,7 +43,7 @@ public class MasterMain {
 		System.out.println("start the scheduler on "+conf.MasterMainPort);
 		scheduler.start();
 		
-		MasterHeartBeat heartbeat = new MasterHeartBeat();
+//		MasterHeartBeat heartbeat = new MasterHeartBeat();
 //		heartbeat.start();
 	}
 	

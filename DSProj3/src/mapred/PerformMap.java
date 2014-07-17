@@ -33,6 +33,9 @@ public class PerformMap extends Thread{
 		this.reducersList= taskInfo.getReduceLists();
 		this.baseFileName = taskInfo.getInputFileName();
 		this.mapperClass = taskInfo.getMapperClass();
+		
+		System.out.println("get mapper class name!!!"+taskInfo.getMapperClass());
+		System.out.println("mapper class name !!! "+this.mapperClass);
 	}
 	
 	
@@ -71,7 +74,7 @@ public class PerformMap extends Thread{
 	 */
 	private void performMapper() throws Exception {
 		//prepare args for mapper
-		Class mapClass = Class.forName("mapred."+mapperClass);
+		Class mapClass = Class.forName("example."+mapperClass);
 		Constructor<?> objConstructor = mapClass.getConstructor();
 		Mapper mapper = (Mapper) objConstructor.newInstance();
 		
