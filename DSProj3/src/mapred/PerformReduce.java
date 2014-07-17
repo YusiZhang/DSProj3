@@ -48,7 +48,8 @@ public class PerformReduce extends Thread {
 
 	public PerformReduce(Task taskInfo){
 		this.taskInfo = taskInfo;
-		File folder = new File("src/");
+		this.mapperOutputs = new ArrayList<String>();
+		File folder = new File("/");
 		File[] listOfFiles = folder.listFiles();
 		for (File file : listOfFiles) {
 		    if (file.isFile()) {
@@ -98,19 +99,40 @@ public class PerformReduce extends Thread {
 
 	private void sendResultToMaster(String uploadFile) throws Exception {
 		Socket soc = new Socket(SlaveMain.conf.MasterIP,SlaveMain.conf.MasterMainPort);
-		String fileName = taskInfo.getJobId() +"_"+ taskInfo.getTaskId() + "_reduceResult";
+//		ArrayList<String> tempList = new ArrayList<String>();
+//		
+//		File folder = new File("/");
+//		File[] listOfFiles = folder.listFiles();
+//		for (File file : listOfFiles) {
+//		    if (file.isFile()) {
+//		    	System.out.println("file in src name is:" +file.getName());
+//		    	String[] parts = file.getName().split("_");
+//		    	if(parts[0].equals(taskInfo.getJobId())&&parts[2].equals("reduceResult")){
+//		    		//add file name into mapper outputs
+//		    		tempList.add(file.getName());
+//		    		System.out.println("Right file!");
+//		    	}else {
+//		    		System.out.println("Wrong file!");
+//		    	}
+//		    }
+//		}
+		
+		
+		
+		String fileName = taskInfo.getJobId() +"_"+ taskInfo.getTaskId() + "_reduceResult0";
+		
 		ReducerDoneMsg replyContent = new ReducerDoneMsg(taskInfo, null);
 		replyContent.fileName = fileName;
 		
 		Message msg = new Message(MSG_TYPE.REDUCER_DONE, replyContent);
-		
+		msg.send(soc);
 		/*for test!!!!!*/
 		Random random = new Random();
 		int next = random.nextInt(3);
 		Thread.sleep(next * 2000);
 		/*for test only!!!!*/
 		
-		new FileTransfer.Upload(fileName, soc).start();;
+		new FileTransfer.Upload(fileName.substring(0,fileName.length()), soc).start();
 		
 		
 		
@@ -124,7 +146,7 @@ public class PerformReduce extends Thread {
 			Constructor<?> objConstructor = reduceClass.getConstructor();
 			Reducer reducer = (Reducer) objConstructor.newInstance();
 			
-			Context context = new Context(1,((Integer)taskInfo.jobId).toString());
+			Context context = new Context(1,((Integer)taskInfo.jobId).toString()+"_"+taskInfo.getTaskId()+"_reduceResult");
 			
 			
 			for(Text key : reduceResult.keySet()) {
