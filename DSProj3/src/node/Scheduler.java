@@ -263,7 +263,7 @@ public class Scheduler extends Thread{
 				Task task = new Task();
 				task.setTaskId(job.curTaskId++);
 				task.setInputFileName(file);
-				task.setTaskClass(job.getMapperClass());
+				task.setMapperClass(job.getMapperClass());
 				task.setJobName(job.getJobName());
 				task.setJobId(job.getJobId());
 				task.setReduceLists(job.getReduceLists());
@@ -314,7 +314,7 @@ public class Scheduler extends Thread{
 			//new a task
 			Task task = new Task();
 			task.setJobId(job.getJobId());
-			task.setTaskClass(job.getReducerClass());
+			task.setReducerClass(job.getReducerClass());
 			task.setInputFileName(((Integer)job.getJobId()).toString());
 			task.setOutputFileName(job.getOutputFileName());
 			
