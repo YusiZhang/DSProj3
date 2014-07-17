@@ -75,12 +75,20 @@ public class PerformReduce extends Thread {
 	public void run() {
 
 		try {
+			System.out.println("starting read reduce file!!");
 			// read all the mappers output file into one file
 			for (String mapperOutputFile : mapperOutputs) {
 				// FileReader fr;
+				System.out.println("reading... " + mapperOutputFile);
 				BufferedReader br = new BufferedReader(new FileReader(mapperOutputFile));
 				String line;
+				int count=0;
 				while ((line = br.readLine()) != null) {
+					/*test*/
+					if(count < 5){
+						System.out.println("cur line is " + line);
+						count++;
+					}
 					KeyValuePair kvp = parseLine(line);
 					pairs.add(kvp);
 				}
@@ -159,7 +167,8 @@ public class PerformReduce extends Thread {
 			for(Text key : reduceResult.keySet()) {
 				reducer.reduce(key, reduceResult.get(key), context);
 			}
-			
+			//CLOSE!!!!
+			context.close();
 			System.out.println("perform reduce ends");
 			
 		} catch (Exception e) {
@@ -201,8 +210,12 @@ public class PerformReduce extends Thread {
 	}
 
 	private KeyValuePair parseLine(String line) {
-		String[] arr = line.split(":");
+		System.out.println(line);
+		
+		String[] arr = line.split("\\:");
+		System.out.println(arr[0]);
 		Text key = new Text(arr[0]);
+		System.out.println(arr[1]);
 		FixValue value = new FixValue(arr[1]);
 		KeyValuePair kvp = new KeyValuePair(key, value);
 		return kvp;

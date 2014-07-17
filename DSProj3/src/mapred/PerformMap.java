@@ -90,7 +90,8 @@ public class PerformMap extends Thread{
 		while((line = reader.readLine()) != null){
 			mapper.map(new LongWritable(lineNum++), new Text(line), context);
 		}
-		
+		//remind to close context writerSSS!!!!
+		context.close();
 		reader.close();
 		fd.close();
 		
