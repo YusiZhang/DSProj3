@@ -41,7 +41,7 @@ public class Context implements Serializable{
 //		System.out.println("printer:"+(writer.toString()));
 		writer.println(key.getValue() + ":" + value.getValue());
 		/*for test*/
-		System.out.println("write:" + key.getValue() + ":" + value.getValue());
+//		System.out.println("write:" + key.getValue() + ":" + value.getValue());
 	}
 	
 	public void close(){
