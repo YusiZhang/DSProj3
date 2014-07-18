@@ -18,7 +18,7 @@ public class WordCountReducer extends Reducer {
 		
 		
 		try {
-			Thread.sleep(500);
+			Thread.sleep(50);
 			System.out.println("Reducing...");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
