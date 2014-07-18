@@ -72,6 +72,8 @@ public class SlaveScheduler extends Thread {
 			case MAPRESULT_TO_REDUCE:
 				downloadReduceResult(msg,socket);
 				break;
+			case FILEDOWNLOAD:
+				fileGetContentRequest(msg,socket);
 			default:
 				break;
 			}
@@ -81,6 +83,11 @@ public class SlaveScheduler extends Thread {
 		}
 	}
 	
+	private void fileGetContentRequest(Message msg, Socket socket) {
+		String name = msg.getContent().toString();
+		new FileTransfer.Upload("./"+name, socket).start();
+	}
+
 	/*
 	 * download reduce files from other nodes
 	 */

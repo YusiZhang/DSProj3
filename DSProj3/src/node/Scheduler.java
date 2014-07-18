@@ -142,12 +142,26 @@ public class Scheduler extends Thread{
 			case REDUCER_DONE:
 			{
 				reducerDoneHandler(msg,socket);
+				break;
 			}
-			
+			case GETFILE:
+				getFileHandler(msg,socket);
 			default:
 				break;
 			}
 
+		}
+	}
+
+	private void getFileHandler(Message msg, Socket socket) {
+		
+		try {
+			FileInfo info = (FileInfo) msg.getContent();
+			SlaveInfo slave = slavePool.get(info.slaveInfo.slaveId);
+			Message reply = new Message(null,slave);
+			reply.send(socket);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

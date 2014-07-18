@@ -1,7 +1,10 @@
 package node;
 
+import java.io.BufferedReader;
 import java.io.Console;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -12,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import communication.Message;
+import communication.Message.MSG_TYPE;
 import communication.WriteFileMsg;
 import config.ParseConfig;
 import dfs.FileTransfer;
@@ -26,7 +30,7 @@ import dfs.Splitter;
 public class ClientMain{
 	public static enum CMD {
 
-		put
+		put,get
 
 	}
 
@@ -55,13 +59,76 @@ public class ClientMain{
 			putFileHandler(socket, param);
 
 			break;
-
+		case get:
+			System.out.println("Please enter file name");
+			String name = scanner.nextLine();
+			System.out.println("Please enter slave id");
+			String slaveid = scanner.nextLine();
+			
+			SlaveInfo slave = getFileLocation(name, slaveid);
+			if(slave != null) {
+				getFileContent(name,slave);
+			}
 		default:
 			break;
 		}
 
 	}
 	
+	private static void getFileContent(String name, SlaveInfo slave) {
+		try {
+			Socket socket = new Socket(slave.address,ParseConfig.SlaveMainPort);
+			Message requestDownload = new Message(MSG_TYPE.FILEDOWNLOAD,name);
+			requestDownload.send(socket);
+			Thread.sleep(500);
+			new FileTransfer.Download(name, socket, ParseConfig.ChunkSize).start();
+			BufferedReader br = new BufferedReader(new FileReader("./"+name));
+			String line;
+			int count = 0;
+			System.out.println("Here are first 5 lines of file" + name);
+			while ((line = br.readLine()) != null) {
+			   System.out.println(line);
+			   count++;
+			   if(count > 5) {
+				   break;
+			   }
+			}
+			br.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static SlaveInfo getFileLocation(String name, String slaveid) {
+		try {
+			
+			Socket socket = new Socket(ParseConfig.MasterIP,ParseConfig.MasterMainPort);
+			FileInfo info = new FileInfo();
+			info.fileName = name;
+			info.slaveInfo = new SlaveInfo(0, null);
+			info.slaveInfo.slaveId = Integer.parseInt(slaveid);
+			Message getFileMsg = new Message(MSG_TYPE.GETFILE,info);
+			getFileMsg.send(socket);
+			Message slaveMsg = getFileMsg.receive(socket);
+			SlaveInfo slave = (SlaveInfo) slaveMsg.getContent();
+			System.out.println("file : " + name + " is on slave id: " + slave.slaveId + "IP: " + slave.address );
+			
+			return slave;
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			return null;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public static void putFileHandler(Socket socket, String fileName) {
 
 		try {
