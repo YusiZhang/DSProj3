@@ -40,7 +40,7 @@ public class Job implements Serializable{
 	public String configName = null;
 	private ArrayList<SlaveInfo> reduceLists  = new ArrayList<SlaveInfo>();
 	public HashMap<Text, FixValue> reduceOutputMap = new HashMap<Text, FixValue>();
-//	public ServerSocket listener = null;
+	public ServerSocket listener = null;
 	public Job(){}
 	public Job(String jobName) {
 		this.jobName = jobName;
@@ -97,13 +97,13 @@ public class Job implements Serializable{
 			msg.send(socket);
 			
 			System.out.println("listening... " + conf.ClientMainPort);
-			ServerSocket listener = null;
-			if(listener != null){
+//			ServerSocket listener = null;
+//			if(listener != null){
 				System.out.println("HI!!! I restart myself!!!!!!!!!!!!");
-			}else{
+//			}else{
 				
 				listener = new ServerSocket(conf.ClientMainPort);
-			}
+//			}
 			
 			while(true){
 				
@@ -139,6 +139,7 @@ public class Job implements Serializable{
 //				listener.close();
 				System.out.println("About to restart job");
 //				this.waitForCompletion(this.configName);
+				listener.close();
 				throw new Exception("restart");
 //				break;
 			
