@@ -55,17 +55,24 @@ public class MasterHeartBeat extends Thread {
 					}
 					
 					//send kill tasks msg
-					
-					Message msgKill = new Message(Message.MSG_TYPE.KILL, killtasks);
-					Socket socketKill = new Socket(slave.address,conf.SlaveMainPort);
-					msgKill.send(socketKill);
-					System.out.println("send kill message");
-					for(Task t : killtasks) {
-						Socket socketRestart = new Socket(t.getAddress(),MasterMain.conf.ClientMainPort);
-						Message jobFail = new Message(Message.MSG_TYPE.JOB_FAIL,t.getJobName());
-						jobFail.send(socketRestart);
+					try{
+						Message msgKill = new Message(Message.MSG_TYPE.KILL, killtasks);
+						Socket socketKill = new Socket(slave.address,conf.SlaveMainPort);
+						msgKill.send(socketKill);
+						System.out.println("send kill message");
+						for(Task t : killtasks) {
+							System.out.println("Ideally connect with " + t.getAddress());
+							Socket socketRestart = new Socket("128.237.184.172",MasterMain.conf.ClientMainPort);
+							
+							Message jobFail = new Message(Message.MSG_TYPE.JOB_FAIL,t.getJobName());
+							jobFail.send(socketRestart);
+							
+						}
+						killtasks.clear();
+					} catch (Exception e){
+						System.out.println("this is another exception!!!!!!!!!");
 					}
-					killtasks.clear();
+					
 					
 					
 					
@@ -75,10 +82,10 @@ public class MasterHeartBeat extends Thread {
 					System.out.println("fail to connect the slave : " + slave.slaveId);
 
 					Scheduler.failPool.put(slave.slaveId, slave);
-//					e.printStackTrace();
+					e.printStackTrace();
 					continue;
 //					
-				}
+				} 
 				
 			}
 			if (Scheduler.failPool.size() > 0) {
