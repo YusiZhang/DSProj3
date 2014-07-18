@@ -52,6 +52,7 @@ public class Message implements Serializable{
 		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 		out.writeObject(this);
 		out.flush();
+		System.out.println("Sending " + this.getType() + " / "+this.getContent().toString() + " to " + soc.getRemoteSocketAddress());
 	}
 	
 	/*
@@ -62,6 +63,7 @@ public class Message implements Serializable{
 		Socket socket = soc;
 		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 		msg = (Message)in.readObject();
+		System.out.println("Receiving " +  msg.getType() + " / "+msg.getContent().toString() + " from " + soc.getRemoteSocketAddress());
 		return msg;
 	}
 

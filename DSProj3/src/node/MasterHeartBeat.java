@@ -15,13 +15,16 @@ public class MasterHeartBeat extends Thread {
 		ParseConfig conf = MasterMain.conf;
 		ArrayList<Task> killtasks = new ArrayList<Task>();
 		while (true) {		
-
+			System.out.println("entering true loop!!");
 			for (SlaveInfo slave : Scheduler.slavePool.values()) {
 				try {
+					System.out.println("cur slave is " + slave.slaveId);
+					
 					//send kill tasks msg
 					Message msgKill = new Message(Message.MSG_TYPE.KILL, killtasks);
 					Socket socketKill = new Socket(slave.address,conf.SlaveMainPort);
 					msgKill.send(socketKill);
+					System.out.println("send kill message");
 					for(Task t : killtasks) {
 						Socket socketRestart = new Socket(t.getAddress(),MasterMain.conf.ClientMainPort);
 						Message jobFail = new Message(Message.MSG_TYPE.JOB_FAIL,t.getJobName());
@@ -46,9 +49,9 @@ public class MasterHeartBeat extends Thread {
 					System.out.println("fail to connect the slave : " + slave.slaveId);
 
 					Scheduler.failPool.put(slave.slaveId, slave);
-					
+					e.printStackTrace();
 					continue;
-//					e.printStackTrace();
+//					
 				}
 				
 			}
