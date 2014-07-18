@@ -113,7 +113,7 @@ public class Job implements Serializable{
 		}
 	}
 	
-	public void handleMsgFromMaster(Message msg,Socket socket) {
+	public void handleMsgFromMaster(Message msg,Socket socket) throws Exception {
 		switch(msg.getType()){
 			case JOB_COMP:
 				
@@ -122,7 +122,13 @@ public class Job implements Serializable{
 //				Printer.printT(result);
 				ArrayList<String> resultFiles = (ArrayList<String>) msg.getContent();
 				Printer.printC(resultFiles);
-				new FileTransfer.Download(jobName+"result",socket , ParseConfig.ChunkSize).start();
+				int count = 0;
+				for(String str : resultFiles){
+					new FileTransfer.Download(jobName+"result" + count,socket , ParseConfig.ChunkSize).start();
+					Thread.sleep(7000);
+					count++;
+				}
+				
 				System.out.println("Job "+jobName+"completed sucessfully!");
 				break;
 				
