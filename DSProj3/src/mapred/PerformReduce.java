@@ -115,13 +115,15 @@ public class PerformReduce extends Thread {
 		} 
 	}
 
-	private void sendResultFileNameToMaster() {
+	private void sendResultFileNameToMaster() throws IOException, Exception {
 		String fileName = taskInfo.getJobId() +"_"+ taskInfo.getTaskId() + "_reduceResult0";
 		FileInfo fileInfo = new FileInfo();
 		fileInfo.fileName = fileName;
 		fileInfo.slaveInfo = taskInfo.getReduceSlave();
 		fileInfo.taskInfo = taskInfo;
 		Message msg = new Message(MSG_TYPE.REDUCER_DONE, fileInfo);
+		Socket socket = new Socket(SlaveMain.conf.MasterIP,SlaveMain.conf.MasterMainPort);
+		msg.send(socket);
 	}
 
 	private void sendResultToMaster(String uploadFile) throws Exception {
