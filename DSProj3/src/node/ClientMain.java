@@ -51,23 +51,24 @@ public class ClientMain{
 		Scanner scanner = new Scanner(new InputStreamReader(System.in));
 		System.out.println("Enter your cmd ");
 		String completecmd = scanner.nextLine();
-		String cmd = completecmd.split("-")[0];
-		String param = completecmd.split("-")[1];
+
 		// accept cmd from console
-		switch (CMD.valueOf(cmd)) {
+		switch (CMD.valueOf(completecmd)) {
 		case put:
-			putFileHandler(socket, param);
+			System.out.println("Please input filename");
+			String name = scanner.nextLine();
+			putFileHandler(socket, name);
 
 			break;
 		case get:
 			System.out.println("Please enter file name");
-			String name = scanner.nextLine();
+			String name2 = scanner.nextLine();
 			System.out.println("Please enter slave id");
 			String slaveid = scanner.nextLine();
 			
-			SlaveInfo slave = getFileLocation(name, slaveid);
+			SlaveInfo slave = getFileLocation(name2, slaveid);
 			if(slave != null) {
-				getFileContent(name,slave);
+				getFileContent(name2,slave);
 			}else {
 				System.out.println("file is not exited on slave id : " + slaveid);
 			}
@@ -84,7 +85,7 @@ public class ClientMain{
 			requestDownload.send(socket);
 			Thread.sleep(500);
 			new FileTransfer.Download(name, socket, ParseConfig.ChunkSize).start();
-			BufferedReader br = new BufferedReader(new FileReader("./"+name));
+			BufferedReader br = new BufferedReader(new FileReader(name));
 			String line;
 			int count = 0;
 			System.out.println("Here are first 5 lines of file" + name);
