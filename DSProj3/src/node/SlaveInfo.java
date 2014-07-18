@@ -13,4 +13,5 @@ public class SlaveInfo implements Serializable{
 		slaveId = id;
 		address = add;
 	}
+	
 }

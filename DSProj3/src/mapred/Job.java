@@ -138,6 +138,7 @@ public class Job implements Serializable{
 				
 			case JOB_FAIL:
 				System.out.println("Job "+jobName+"is killed by the master!");
+				System.out.println("Please restart job manaully");
 				break;
 			
 			default:

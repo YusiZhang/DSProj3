@@ -9,6 +9,7 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import mapred.Job;
 import mapred.PerformMap;
 import mapred.PerformReduce;
 import mapred.Task;
@@ -19,11 +20,13 @@ import dfs.FileTransfer;
 public class SlaveScheduler extends Thread {
 	// public static int curPort = ParseConfig.StartPort;
 	public static int slaveId = 0;
+	public static ConcurrentHashMap <Integer,ArrayList<Thread>> jobToThread = new ConcurrentHashMap<Integer, ArrayList<Thread>>(); 
+	
 	ServerSocket listener;
 	Socket socket;
 	Message msg;
 	ParseConfig conf;
-
+	
 	public SlaveScheduler(int port) throws IOException {
 		listener = new ServerSocket(port);
 		socket = null;
@@ -64,6 +67,11 @@ public class SlaveScheduler extends Thread {
 				break;
 			case FILEDOWNLOAD:
 				fileGetContentRequest(msg,socket);
+				break;
+			case KILL:
+				//kill all thread in the job
+				//message are tasks
+				killThread(msg,socket);
 			default:
 				break;
 			}
@@ -73,6 +81,21 @@ public class SlaveScheduler extends Thread {
 		}
 	}
 	
+	private void killThread(Message msg, Socket socket) {
+		
+		ArrayList<Task> tasks = (ArrayList<Task>) msg.getContent();
+		for(Task task : tasks) {
+			if(jobToThread.contains(task.getJobId())){
+				for(Thread t : jobToThread.get(task.getJobId())){
+					//kill thread?? not safe way.
+					t.interrupt();
+				}
+			}else {
+				continue;
+			}
+		}
+	}
+
 	private void fileGetContentRequest(Message msg, Socket socket) {
 		String name = msg.getContent().toString();
 		new FileTransfer.Upload("./"+name, socket).start();
@@ -92,7 +115,15 @@ public class SlaveScheduler extends Thread {
 	 * Handle reduce task
 	 */
 	private void newReduceHandler(Message msg, Socket socket) {
+		Task task = (Task) msg.getContent();
 		PerformReduce performReduce = new PerformReduce((Task)msg.getContent());  
+		
+		if(jobToThread.contains(task.getJobId())){
+			jobToThread.get(task.getJobId()).add(performReduce);
+		} else {
+			jobToThread.put(task.getJobId(), new ArrayList<Thread>());
+			jobToThread.get(task.getJobId()).add(performReduce);
+		}
 		performReduce.start();
 	}
 	
@@ -101,7 +132,14 @@ public class SlaveScheduler extends Thread {
 	 * In msg, there should be reduce slave info. Maper slave can know where to send result.
 	 */
 	private void newMapHandler(Message msg, Socket socket) {
+		Task task = (Task) msg.getContent();
 		PerformMap performMap = new PerformMap((Task) msg.getContent()); 
+		if(jobToThread.contains(task.getJobId())){
+			jobToThread.get(task.getJobId()).add(performMap);
+		} else {
+			jobToThread.put(task.getJobId(), new ArrayList<Thread>());
+			jobToThread.get(task.getJobId()).add(performMap);
+		}
 		performMap.start();
 	}
 	

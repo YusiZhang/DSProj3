@@ -43,6 +43,7 @@ public class Scheduler extends Thread{
 	public static ConcurrentHashMap<Job, ArrayList<Task>> jobToReducer = new ConcurrentHashMap<Job, ArrayList<Task>>();
     
 	public static ConcurrentHashMap<Task, SlaveInfo> TaskToSlave = new ConcurrentHashMap<Task, SlaveInfo>();
+	public static ConcurrentHashMap<SlaveInfo, ArrayList<Task>> SlaveToTask = new ConcurrentHashMap<SlaveInfo, ArrayList<Task>>();
 	
 	public static ConcurrentHashMap<Job,ArrayList<FileInfo>> resFileTable = new ConcurrentHashMap<Job, ArrayList<FileInfo>>();
 	public static int slaveId = 0;
@@ -334,6 +335,12 @@ public class Scheduler extends Thread{
 				task.setInputFileName(file);
 				jobToMapper.get(job).add(task);
 				TaskToSlave.put(task, curSlave);
+				if(SlaveToTask.contains(curSlave)){
+					SlaveToTask.get(curSlave).add(task);
+				}else {
+					SlaveToTask.put(curSlave, new ArrayList<Task>());
+					SlaveToTask.get(curSlave).add(task);
+				}
 				
 				//send the new task to the slave
 				Message taskMsg = new Message(Message.MSG_TYPE.NEW_MAPPER, task);
@@ -384,6 +391,13 @@ public class Scheduler extends Thread{
 			task.setTaskId(job.curTaskId++);
 			//set cur slave to be reducer. we can get this info later after reducer done
 			task.setReduceSlave(curSlave);
+			TaskToSlave.put(task, curSlave);
+			if(SlaveToTask.contains(curSlave)){
+				SlaveToTask.get(curSlave).add(task);
+			}else {
+				SlaveToTask.put(curSlave, new ArrayList<Task>());
+				SlaveToTask.get(curSlave).add(task);
+			}
 			//connect to the slave
 			Socket soc;
 			try {
