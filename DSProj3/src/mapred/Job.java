@@ -134,9 +134,9 @@ public class Job implements Serializable{
 			case JOB_FAIL:
 				System.out.println("Job "+jobName+"is killed by the master!");
 				System.out.println("Please restart job manaully");
-				listener.close();
-				System.out.println("About to restart job");
-				this.waitForCompletion(this.configName);
+//				listener.close();
+//				System.out.println("About to restart job");
+//				this.waitForCompletion(this.configName);
 				break;
 			
 			default:
