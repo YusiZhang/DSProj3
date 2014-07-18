@@ -10,12 +10,7 @@ import config.ParseConfig;
 
 public class MasterHeartBeat extends Thread {
 	public void run() {
-//		try {
-//			Thread.sleep(5000);
-//		} catch (InterruptedException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
+
 		System.out.println("start the heart beat thread on master");
 		
 		ParseConfig conf = MasterMain.conf;
@@ -27,17 +22,7 @@ public class MasterHeartBeat extends Thread {
 				try {
 					System.out.println("cur slave is " + slave.slaveId);
 					
-					//send kill tasks msg
-					Message msgKill = new Message(Message.MSG_TYPE.KILL, killtasks);
-					Socket socketKill = new Socket(slave.address,conf.SlaveMainPort);
-					msgKill.send(socketKill);
-					System.out.println("send kill message");
-					for(Task t : killtasks) {
-						Socket socketRestart = new Socket(t.getAddress(),MasterMain.conf.ClientMainPort);
-						Message jobFail = new Message(Message.MSG_TYPE.JOB_FAIL,t.getJobName());
-						jobFail.send(socketRestart);
-					}
-					killtasks.clear();
+					
 					
 					//send heartbeat msg
 					Message msg = new Message(Message.MSG_TYPE.KEEP_ALIVE, "");
@@ -52,11 +37,28 @@ public class MasterHeartBeat extends Thread {
 						throw new Exception();
 						
 					}
+					
+					//send kill tasks msg
+					
+					Message msgKill = new Message(Message.MSG_TYPE.KILL, killtasks);
+					Socket socketKill = new Socket(slave.address,conf.SlaveMainPort);
+					msgKill.send(socketKill);
+					System.out.println("send kill message");
+					for(Task t : killtasks) {
+						Socket socketRestart = new Socket(t.getAddress(),MasterMain.conf.ClientMainPort);
+						Message jobFail = new Message(Message.MSG_TYPE.JOB_FAIL,t.getJobName());
+						jobFail.send(socketRestart);
+					}
+					killtasks.clear();
+					
+					
+					
+					
 				} catch (Exception e) {
 					System.out.println("fail to connect the slave : " + slave.slaveId);
 
 					Scheduler.failPool.put(slave.slaveId, slave);
-					e.printStackTrace();
+//					e.printStackTrace();
 					continue;
 //					
 				}
@@ -69,7 +71,13 @@ public class MasterHeartBeat extends Thread {
 				//remove from slavepool
 				for (int i: Scheduler.failPool.keySet()) {
 					
-					killtasks.addAll(Scheduler.SlaveToTask.get(Scheduler.slavePool.get(i)));
+					if(Scheduler.SlaveToTask.get(Scheduler.slavePool.get(i)) == null){
+						System.out.println("There is no task on slave " + i);
+					}else {
+						killtasks.addAll(Scheduler.SlaveToTask.get(Scheduler.slavePool.get(i)));
+					}
+					
+					
 					
 					Scheduler.slavePool.remove(i);
 					

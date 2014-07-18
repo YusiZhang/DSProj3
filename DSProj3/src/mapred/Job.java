@@ -37,9 +37,10 @@ public class Job implements Serializable{
 	public int finishedMapperTasks = 0;
 	public int finishedReducerTasks = 0;
 	public int curTaskId = 0;
+	public String configName = null;
 	private ArrayList<SlaveInfo> reduceLists  = new ArrayList<SlaveInfo>();
 	public HashMap<Text, FixValue> reduceOutputMap = new HashMap<Text, FixValue>();
-	
+	public ServerSocket listener = null;
 	public Job(){}
 	public Job(String jobName) {
 		this.jobName = jobName;
@@ -88,6 +89,7 @@ public class Job implements Serializable{
 		ParseConfig conf;
 		try {
 			conf = new ParseConfig(config);
+			this.configName = config;
 			//connect to master
 			Socket socket = new Socket(conf.MasterIP, conf.MasterMainPort);
 			System.out.println("submitting ..."+this.getMapperClass());
@@ -96,7 +98,7 @@ public class Job implements Serializable{
 			msg.send(socket);
 			
 			System.out.println("listening... " + conf.ClientMainPort);
-			ServerSocket listener = new ServerSocket(conf.ClientMainPort);
+			listener = new ServerSocket(conf.ClientMainPort);
 			while(true){
 				
 				Socket resultSoc = listener.accept();
@@ -125,13 +127,6 @@ public class Job implements Serializable{
 				}
 				
 				
-//				Printer.printC(resultFiles);
-//				int count = 0;
-//				for(String str : resultFiles){
-//					new FileTransfer.Download(jobName+"result" + count,socket , ParseConfig.ChunkSize).start();
-//					Thread.sleep(7000);
-//					count++;
-//				}
 				
 				System.out.println("Job "+jobName+"completed sucessfully!");
 				break;
@@ -139,6 +134,9 @@ public class Job implements Serializable{
 			case JOB_FAIL:
 				System.out.println("Job "+jobName+"is killed by the master!");
 				System.out.println("Please restart job manaully");
+				listener.close();
+				System.out.println("About to restart job");
+				this.waitForCompletion(this.configName);
 				break;
 			
 			default:
