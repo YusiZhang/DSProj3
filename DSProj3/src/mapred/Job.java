@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import node.FileInfo;
 import node.Scheduler;
 import node.SlaveInfo;
 import communication.Message;
@@ -117,17 +118,20 @@ public class Job implements Serializable{
 		switch(msg.getType()){
 			case JOB_COMP:
 				
-				//write file to local
-//				HashMap<Text, FixValue> result = (HashMap<Text, FixValue>) msg.getContent();
-//				Printer.printT(result);
-				ArrayList<String> resultFiles = (ArrayList<String>) msg.getContent();
-				Printer.printC(resultFiles);
-				int count = 0;
-				for(String str : resultFiles){
-					new FileTransfer.Download(jobName+"result" + count,socket , ParseConfig.ChunkSize).start();
-					Thread.sleep(7000);
-					count++;
+
+				ArrayList<FileInfo> resultFiles = (ArrayList<FileInfo>) msg.getContent();
+				for(FileInfo info : resultFiles) {
+					System.out.println(info.fileName + " is on slave id: " + info.slaveInfo.slaveId );
 				}
+				
+				
+//				Printer.printC(resultFiles);
+//				int count = 0;
+//				for(String str : resultFiles){
+//					new FileTransfer.Download(jobName+"result" + count,socket , ParseConfig.ChunkSize).start();
+//					Thread.sleep(7000);
+//					count++;
+//				}
 				
 				System.out.println("Job "+jobName+"completed sucessfully!");
 				break;

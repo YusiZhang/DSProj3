@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 //import java.io.FileReader;
 import java.util.*;
 
+import node.FileInfo;
 import node.SlaveMain;
 //import java.util.HashMap;
 //
@@ -105,11 +106,22 @@ public class PerformReduce extends Thread {
 
 			System.out.println("here the reduceResult size: "+reduceResult.size());
 			// send the result back to master
-			sendResultToMaster(""+taskInfo.getJobId());
+//			sendResultToMaster(""+taskInfo.getJobId());
+			// send file name to master instead actual files
+			sendResultFileNameToMaster();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
+	}
+
+	private void sendResultFileNameToMaster() {
+		String fileName = taskInfo.getJobId() +"_"+ taskInfo.getTaskId() + "_reduceResult0";
+		FileInfo fileInfo = new FileInfo();
+		fileInfo.fileName = fileName;
+		fileInfo.slaveInfo = taskInfo.getReduceSlave();
+		fileInfo.taskInfo = taskInfo;
+		Message msg = new Message(MSG_TYPE.REDUCER_DONE, fileInfo);
 	}
 
 	private void sendResultToMaster(String uploadFile) throws Exception {

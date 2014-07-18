@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import mapred.Job;
 import mapred.Task;
 import communication.Message;
+import communication.Message.MSG_TYPE;
 import communication.ReducerDoneMsg;
 import communication.WriteFileMsg;
 import config.ParseConfig;
@@ -43,6 +44,7 @@ public class Scheduler extends Thread{
     
 	public static ConcurrentHashMap<Task, SlaveInfo> TaskToSlave = new ConcurrentHashMap<Task, SlaveInfo>();
 	
+	public static ConcurrentHashMap<Job,ArrayList<FileInfo>> resFileTable = new ConcurrentHashMap<Job, ArrayList<FileInfo>>();
 	public static int slaveId = 0;
 	public static int curJobId = 0;
 	ServerSocket listener;
@@ -118,7 +120,7 @@ public class Scheduler extends Thread{
 			case NEW_JOB:
 				System.out.println("submitting a job from the master to mapper nodes!");
 				submitMapperJob((Job) msg.getContent(), socket);
-				
+				resFileTable.put((Job) msg.getContent(), new ArrayList<FileInfo>());
 				break;
 			
 			case MAPPER_DONE:
@@ -129,7 +131,6 @@ public class Scheduler extends Thread{
 					//if all the mapper tasks sucess, assign the reducer tasks
 					if (job.finishedMapperTasks == job.getMapperTaskSplits()){
 						System.out.println("All the mapper task of "+job.getJobName()+" are done!");
-						
 						submitReduceJob(job);
 					}else 
 					System.out.println("mappers of this job haven't been all done");
@@ -151,79 +152,100 @@ public class Scheduler extends Thread{
 	}
 
 	private void reducerDoneHandler(Message msg,Socket socket) {
-		ReducerDoneMsg reducerDoneMsg = (ReducerDoneMsg) msg.getContent();
-		Job curJob = jobPool.get(reducerDoneMsg.task.getJobId());
-		curJob.finishedReducerTasks++;
+		
 		
 //		mergeFile(curJob, reducerDoneMsg.ReduceResultMap);
-		ReducerDoneMsg content = (ReducerDoneMsg) msg.getContent();
-		new FileTransfer.Download(content.fileName, socket, MasterMain.conf.ChunkSize).start();
 		
 		
+		//STRATEGY 1 DOWNLOAD ACTUAL FILES
+//		ReducerDoneMsg reducerDoneMsg = (ReducerDoneMsg) msg.getContent();
+//		Job curJob = jobPool.get(reducerDoneMsg.task.getJobId());
+//		curJob.finishedReducerTasks++;
+//		ReducerDoneMsg content = (ReducerDoneMsg) msg.getContent();
+		
+//		new FileTransfer.Download(content.fileName, socket, MasterMain.conf.ChunkSize).start();
+		
+		//STRATEGY 2 RECEIVE FILES NAMES
+		FileInfo fileInfo = (FileInfo) msg.getContent();
+		Job curJob = jobPool.get(fileInfo.taskInfo.getJobId());
+		curJob.finishedReducerTasks++;
+		
+		resFileTable.get(curJob).add(fileInfo);
 		
 		if (curJob.finishedReducerTasks == curJob.getReducerTaskSplits()) {
-			System.out.println("All the reducer task of "+curJob.getJobName()+" are done!");
+			
+			
+			
 			
 			//inform the client
 			try {
-//				Socket socket1 = new Socket(curJob.getAddress(), curJob.getPort());
-				
+				//STRATEGY 2 SEND FILESINFO TO CLIENT
 				System.out.print("Job done successfully! Transfer the job result to the client");
+				
+				System.out.println("All the reducer task of "+curJob.getJobName()+" are done!");
+				
+				Socket reduceRes = new Socket(MasterMain.conf.ClientIP,MasterMain.conf.ClientMainPort);
+				
+				//message content is ArrayList<FileInfo>
+				Message reduceResMsg = new Message(MSG_TYPE.JOB_COMP, resFileTable.get(curJob));
+				
+				reduceResMsg.send(reduceRes);
+				
 				//read all reduce result files and send to client!!
-				ArrayList<String> jobResultFiles = new ArrayList<String>();
-				
-				File folder = new File("./");
-				File[] listOfFiles = folder.listFiles();
-				System.out.println("list of files"+listOfFiles.length);
-				for (File file : listOfFiles) {
-//				    if (file.isFile()) {
-				    	
-				    	System.out.println("file in src name is:" +file.getName());
-				    	String[] parts = file.getName().split("_");
-				    	if(parts.length >= 3 ){
-				    		System.out.println("parts "+parts[0] + " " + parts[1] + " " + parts[2]);
-					    	System.out.println("targs "+reducerDoneMsg.task.getJobId() + " " + parts[1] + " " + "reduceResult0");
-				    	}
-				    	
-				    	if(parts[0].equals(reducerDoneMsg.task.getJobId()+"")&&parts[2].substring(0,12).equals("reduceResult")){
-				    		
-//				    	if (file.getName().equals("0_0_Reduce") || file.getName().equals("0_0_MapResult0") ){
-//				    		if (file.getName().equals("0_0_Reduce") )
-//				    			System.out.println("0_0_Reduce is right");
-				    		//add file name into mapper outputs
-				    		jobResultFiles.add(file.getName());
-				    		System.out.println("perform reduce Right file!");
-				    	}else {
-				    		System.out.println("perform reduce Wrong file!");
-				    	}
-				    }
+//				ArrayList<String> jobResultFiles = new ArrayList<String>();
+//				
+//				File folder = new File("./");
+//				File[] listOfFiles = folder.listFiles();
+//				System.out.println("list of files"+listOfFiles.length);
+//				for (File file : listOfFiles) {
+////				    if (file.isFile()) {
+//				    	
+//				    	System.out.println("file in src name is:" +file.getName());
+//				    	String[] parts = file.getName().split("_");
+//				    	if(parts.length >= 3 ){
+//				    		System.out.println("parts "+parts[0] + " " + parts[1] + " " + parts[2]);
+//					    	System.out.println("targs "+reducerDoneMsg.task.getJobId() + " " + parts[1] + " " + "reduceResult0");
+//				    	}
+//				    	
+//				    	if(parts[0].equals(reducerDoneMsg.task.getJobId()+"")&&parts[2].substring(0,12).equals("reduceResult")){
+//				    		
+////				    	if (file.getName().equals("0_0_Reduce") || file.getName().equals("0_0_MapResult0") ){
+////				    		if (file.getName().equals("0_0_Reduce") )
+////				    			System.out.println("0_0_Reduce is right");
+//				    		//add file name into mapper outputs
+//				    		jobResultFiles.add(file.getName());
+//				    		System.out.println("perform reduce Right file!");
+//				    	}else {
+//				    		System.out.println("perform reduce Wrong file!");
+//				    	}
+//				    }
+////				}
+//				
+//				
+//				
+//
+//				
+////				new Message(Message.MSG_TYPE.JOB_COMP, jobResultFiles).send(socket1);
+//				System.out.println(curJob.getAddress() + "  " + MasterMain.conf.ClientMainPort);
+//				Socket resultSoc = new Socket(curJob.getAddress(),MasterMain.conf.ClientMainPort);
+////				Socket resultSoc = new Socket("128.237.184.172",15641);
+//				new Message(Message.MSG_TYPE.JOB_COMP, jobResultFiles).send(resultSoc);
+//				
+//				
+//				//send each result files to client
+//				for(String str : jobResultFiles){
+//					
+//					/*for test!!!!!*/
+//					Random random = new Random();
+//					int next = random.nextInt(3);
+//
+//					Thread.sleep(next * 2000);
+//					
+//					System.out.println("filename : " + str);
+//					new FileTransfer.Upload("./"+str, resultSoc).start();
 //				}
-				
-				
-				
-
-				
-//				new Message(Message.MSG_TYPE.JOB_COMP, jobResultFiles).send(socket1);
-				System.out.println(curJob.getAddress() + "  " + MasterMain.conf.ClientMainPort);
-				Socket resultSoc = new Socket(curJob.getAddress(),MasterMain.conf.ClientMainPort);
-//				Socket resultSoc = new Socket("128.237.184.172",15641);
-				new Message(Message.MSG_TYPE.JOB_COMP, jobResultFiles).send(resultSoc);
-				
-				
-				//send each result files to client
-				for(String str : jobResultFiles){
-					
-					/*for test!!!!!*/
-					Random random = new Random();
-					int next = random.nextInt(3);
-
-					Thread.sleep(next * 2000);
-					
-					System.out.println("filename : " + str);
-					new FileTransfer.Upload("./"+str, resultSoc).start();
-				}
-				
-				
+//				
+//				
 				
 				
 			} catch (Exception e) {
@@ -248,6 +270,7 @@ public class Scheduler extends Thread{
 		job.setJobId();
 		
 		jobPool.put(job.getJobId(), job);
+		
 		
 		setReduceList(job);
 		
@@ -283,6 +306,7 @@ public class Scheduler extends Thread{
 				//build socket
 				Socket soc =  new Socket(curSlave.address.getHostName(),MasterMain.conf.SlaveMainPort);
 				//generate a new task
+				
 				Task task = new Task();
 				task.setTaskId(job.curTaskId++);
 				task.setInputFileName(file);
@@ -342,6 +366,8 @@ public class Scheduler extends Thread{
 			task.setInputFileName(((Integer)job.getJobId()).toString());
 			task.setOutputFileName(job.getOutputFileName());
 			task.setTaskId(job.curTaskId++);
+			//set cur slave to be reducer. we can get this info later after reducer done
+			task.setReduceSlave(curSlave);
 			//connect to the slave
 			Socket soc;
 			try {

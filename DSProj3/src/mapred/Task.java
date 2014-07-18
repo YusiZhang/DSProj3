@@ -14,6 +14,7 @@ public class Task extends Job implements Serializable{
 	private String TaskClass;
 	private SlaveInfo reduceSlave;
 	
+	
 	public Task(String taskName) {
 		super(taskName);
 		// TODO Auto-generated constructor stub
