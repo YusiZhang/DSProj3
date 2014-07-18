@@ -99,9 +99,10 @@ public class Job implements Serializable{
 			
 			System.out.println("listening... " + conf.ClientMainPort);
 			if(listener != null){
-				listener = new ServerSocket(conf.ClientMainPort);
-			}else{
 				System.out.println("HI!!! I restart myself!!!!!!!!!!!!");
+			}else{
+				
+				listener = new ServerSocket(conf.ClientMainPort);
 			}
 			
 			while(true){
