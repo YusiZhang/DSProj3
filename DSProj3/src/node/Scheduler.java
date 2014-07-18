@@ -180,11 +180,11 @@ public class Scheduler extends Thread{
 			//inform the client
 			try {
 				//STRATEGY 2 SEND FILESINFO TO CLIENT
-				System.out.print("Job done successfully! Transfer the job result to the client");
+				System.out.println("Job done successfully! Transfer the job result to the client");
 				
 				System.out.println("All the reducer task of "+curJob.getJobName()+" are done!");
 				
-				Socket reduceRes = new Socket(MasterMain.conf.ClientIP,MasterMain.conf.ClientMainPort);
+				Socket reduceRes = new Socket(curJob.getAddress(),MasterMain.conf.ClientMainPort);
 				
 				//message content is ArrayList<FileInfo>
 				Message reduceResMsg = new Message(MSG_TYPE.JOB_COMP, resFileTable.get(curJob));
