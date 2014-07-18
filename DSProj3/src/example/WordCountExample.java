@@ -50,8 +50,7 @@ public class WordCountExample {
 			e.printStackTrace();
 		} catch (Exception e) {
 			try {
-				socket = new Socket(ParseConfig.MasterIP, ParseConfig.MasterMainPort);
-				ClientMain.putFileHandler(socket, job.getInputFileName());
+				
 				job.waitForCompletion(args[0]);
 			} catch (UnknownHostException e1) {
 				e1.printStackTrace();
@@ -66,7 +65,7 @@ public class WordCountExample {
 		}
 	    
 	    
-	
+		
 
 	 }
 	       
