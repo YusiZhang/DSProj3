@@ -98,7 +98,7 @@ public class FileTransfer {
 		public void run() {
 			InputStream is;
 			try {
-				
+				System.out.println("File Downloading.....");	
 				is = this.socket.getInputStream();
 				FileOutputStream fos = new FileOutputStream(fileName);
 				//while loop until read reach total amount of chunk size
