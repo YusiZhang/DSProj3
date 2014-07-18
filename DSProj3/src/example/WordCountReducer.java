@@ -16,5 +16,13 @@ public class WordCountReducer extends Reducer {
 		}
 		context.write(new Text(key.getValue()), new FixValue(sum));
 		
+		
+		try {
+			Thread.sleep(500);
+			System.out.println("Reducing...");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

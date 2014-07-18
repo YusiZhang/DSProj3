@@ -23,6 +23,13 @@ public class WordCountMaper extends Mapper{
 			
 		}
 		
+		try {
+			Thread.sleep(500);
+			System.out.println("Mapping...");
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 }
