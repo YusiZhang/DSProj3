@@ -8,11 +8,6 @@ EndPort=10000;
 ClientIP=127.0.0.1;
 ClientPort=1000;
 ChunkSize=14000;
-<<<<<<< HEAD
-HearBeatFreq=2000;
-Replica=2;
-=======
 HearBeatFreq=5000;
 Replica=1;
->>>>>>> branch 'master' of git@github.com:YusiZhang/DSProj3.git
 ReducerTaskSplits=1;
