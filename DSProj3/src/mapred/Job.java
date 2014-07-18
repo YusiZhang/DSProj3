@@ -139,9 +139,12 @@ public class Job implements Serializable{
 //				listener.close();
 				System.out.println("About to restart job");
 //				this.waitForCompletion(this.configName);
-				listener.close();
-				throw new Exception("restart");
-//				break;
+//				listener.close();
+				this.jobId++;
+				msg = new Message(Message.MSG_TYPE.NEW_JOB,this);
+				msg.send(socket);
+//				throw new Exception("restart");
+				break;
 			
 			default:
 				break;
