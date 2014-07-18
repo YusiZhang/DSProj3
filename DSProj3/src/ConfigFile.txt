@@ -8,6 +8,6 @@ EndPort=10000;
 ClientIP=127.0.0.1;
 ClientPort=1000;
 ChunkSize=7000;
-HearBeatFreq=5000;
+HearBeatFreq=2000;
 Replica=0;
 ReducerTaskSplits=2;
