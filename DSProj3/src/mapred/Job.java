@@ -40,7 +40,7 @@ public class Job implements Serializable{
 	public String configName = null;
 	private ArrayList<SlaveInfo> reduceLists  = new ArrayList<SlaveInfo>();
 	public HashMap<Text, FixValue> reduceOutputMap = new HashMap<Text, FixValue>();
-	public ServerSocket listener = null;
+//	public ServerSocket listener = null;
 	public Job(){}
 	public Job(String jobName) {
 		this.jobName = jobName;
@@ -97,12 +97,10 @@ public class Job implements Serializable{
 			msg.send(socket);
 			
 			System.out.println("listening... " + conf.ClientMainPort);
-			if(listener != null){
-				System.out.println("HI!!! I restart myself!!!!!!!!!!!!");
-			}else{
-				
-				listener = new ServerSocket(conf.ClientMainPort);
-			}
+			ServerSocket listener = null;
+			System.out.println("HI!!! I restart myself!!!!!!!!!!!!");
+			listener = new ServerSocket(conf.ClientMainPort);
+			
 			
 			while(true){
 				
