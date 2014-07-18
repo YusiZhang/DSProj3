@@ -68,6 +68,8 @@ public class ClientMain{
 			SlaveInfo slave = getFileLocation(name, slaveid);
 			if(slave != null) {
 				getFileContent(name,slave);
+			}else {
+				System.out.println("file is not exited on slave id : " + slaveid);
 			}
 		default:
 			break;

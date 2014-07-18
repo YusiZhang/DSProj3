@@ -52,17 +52,7 @@ public class SlaveScheduler extends Thread {
 				fileDownloadHandler( msg,  socket);
 				break;
 				
-			case KEEP_ALIVE:
-				Message reply = new Message(Message.MSG_TYPE.KEEP_ALIVE, null);
-				try {
-					reply.send(socket);
-					System.out.println("respond to master heart beat");
-					
-				} catch (Exception e) {
-					System.out.println("fail to respond to heart beat");
-					e.printStackTrace();
-				}
-				break;
+			
 			case NEW_MAPPER:
 				newMapHandler(msg,socket);
 				break;

@@ -75,7 +75,9 @@ public class Scheduler extends Thread{
 			case REG_NEW_SLAVE:
 				regNewSlaveHandler(socket);
 				break;
+			case KEEP_ALIVE:
 				
+				break;
 			case FILE_PUT_REQ_TO_MASTER:
 				
 				WriteFileMsg writeFileMsg = (WriteFileMsg) msg.getContent(); 
