@@ -391,6 +391,7 @@ public class Scheduler extends Thread{
 			task.setOutputFileName(job.getOutputFileName());
 			task.setTaskId(job.curTaskId++);
 			task.setAddress(job.getAddress());
+			task.setJobName(job.getJobName());
 			//set cur slave to be reducer. we can get this info later after reducer done
 			task.setReduceSlave(curSlave);
 			TaskToSlave.put(task, curSlave);

@@ -85,9 +85,8 @@ public class Job implements Serializable{
 	}
 
 	//client calls waitForCompletion to run the job
-	public void waitForCompletion(String config) {
+	public void waitForCompletion(String config) throws Exception{
 		ParseConfig conf;
-		try {
 			conf = new ParseConfig(config);
 			this.configName = config;
 			//connect to master
@@ -99,9 +98,10 @@ public class Job implements Serializable{
 			
 			System.out.println("listening... " + conf.ClientMainPort);
 			if(listener != null){
-				listener = new ServerSocket(conf.ClientMainPort);
-			}else{
 				System.out.println("HI!!! I restart myself!!!!!!!!!!!!");
+			}else{
+				
+				listener = new ServerSocket(conf.ClientMainPort);
 			}
 			
 			while(true){
@@ -115,10 +115,6 @@ public class Job implements Serializable{
 			//closes the socket
 //			socket.close();
 			
-		} catch (Exception e) {
-			System.out.println("fail to submit the job to master!");
-			e.printStackTrace();
-		}
 	}
 	
 	public void handleMsgFromMaster(Message msg,Socket socket) throws Exception {
@@ -138,11 +134,12 @@ public class Job implements Serializable{
 				
 			case JOB_FAIL:
 				System.out.println("Job "+jobName+"is killed by the master!");
-				System.out.println("Please restart job manaully");
+//				System.out.println("Please restart job manaully");
 //				listener.close();
 				System.out.println("About to restart job");
-				this.waitForCompletion(this.configName);
-				break;
+//				this.waitForCompletion(this.configName);
+				throw new Exception("restart");
+//				break;
 			
 			default:
 				break;

@@ -1,6 +1,8 @@
 package example;
 
+import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import node.ClientMain;
 import config.ParseConfig;
@@ -11,11 +13,15 @@ import mapred.Job;
 
 public class WordCountExample {
 
-	 public static void main(String[] args) throws Exception {
+	 public static void main(String[] args) {
 		 /*args[0]: src/ConfigFile.txt 	arg[1]: input file name args[2]: output file name*/
 //	    JobConf conf = new JobConf();
 //	    Job job = new Job(conf, "wordcount");
-		new ParseConfig(args[0]);
+		try {
+			new ParseConfig(args[0]);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	    Job job = new Job("wordcount");
 //	    job.setOutputKeyClass(Text.class);
 //	    job.setOutputValueClass(IntWritable.class);
@@ -33,10 +39,36 @@ public class WordCountExample {
 	    job.setOutputFileName(args[2]);
 	    job.setReducerTaskSplits(ParseConfig.ReducerTaskSplits);
 	    /*copy file from path to dfs*/
-	    Socket socket = new Socket(ParseConfig.MasterIP, ParseConfig.MasterMainPort);
-	    ClientMain.putFileHandler(socket, job.getInputFileName());
+	    Socket socket;
+		try {
+			socket = new Socket(ParseConfig.MasterIP, ParseConfig.MasterMainPort);
+			ClientMain.putFileHandler(socket, job.getInputFileName());
+			job.waitForCompletion(args[0]);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			try {
+				socket = new Socket(ParseConfig.MasterIP, ParseConfig.MasterMainPort);
+				ClientMain.putFileHandler(socket, job.getInputFileName());
+				job.waitForCompletion(args[0]);
+			} catch (UnknownHostException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (Exception e1) {
+				System.out.println("I am sorry, I cannot restart myself twice T_T");
+				e1.printStackTrace();
+			}
+			
+			e.printStackTrace();
+		}
 	    
-	    job.waitForCompletion(args[0]);
+	    
+	
 
 	 }
 	       
