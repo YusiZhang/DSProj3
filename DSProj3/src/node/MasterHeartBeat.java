@@ -61,8 +61,9 @@ public class MasterHeartBeat extends Thread {
 						msgKill.send(socketKill);
 						System.out.println("send kill message");
 						for(Task t : killtasks) {
+							System.out.println("Ideally connect with " + t.getAddress());
+							Socket socketRestart = new Socket("128.237.184.172",MasterMain.conf.ClientMainPort);
 							
-							Socket socketRestart = new Socket(t.getAddress(),MasterMain.conf.ClientMainPort);
 							Message jobFail = new Message(Message.MSG_TYPE.JOB_FAIL,t.getJobName());
 							jobFail.send(socketRestart);
 							

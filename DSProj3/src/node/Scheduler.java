@@ -333,6 +333,7 @@ public class Scheduler extends Thread{
 				task.setJobId(job.getJobId());
 				task.setReduceLists(job.getReduceLists());
 				task.setInputFileName(file);
+				task.setAddress(job.getAddress());
 				jobToMapper.get(job).add(task);
 				TaskToSlave.put(task, curSlave);
 				if(SlaveToTask.contains(curSlave)){
@@ -389,6 +390,7 @@ public class Scheduler extends Thread{
 			task.setInputFileName(((Integer)job.getJobId()).toString());
 			task.setOutputFileName(job.getOutputFileName());
 			task.setTaskId(job.curTaskId++);
+			task.setAddress(job.getAddress());
 			//set cur slave to be reducer. we can get this info later after reducer done
 			task.setReduceSlave(curSlave);
 			TaskToSlave.put(task, curSlave);
