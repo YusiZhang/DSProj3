@@ -2,6 +2,7 @@ package node;
 
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import mapred.Task;
@@ -18,6 +19,21 @@ public class MasterHeartBeat extends Thread {
 		while (true) {		
 			System.out.println("entering true loop!!");
 			System.out.println("slavePool size " + Scheduler.slavePool.size());
+			
+			/*for testing....*/
+			System.out.println("/*for testing....*/");
+			synchronized (Scheduler.fileLayout) {
+				synchronized (Scheduler.slavePool){
+					for(String file : Scheduler.fileLayout.keySet()){
+						Iterator it = Scheduler.fileLayout.get(file).iterator();
+						while(it.hasNext()){
+							SlaveInfo tempslave = (SlaveInfo) it.next();
+							System.out.println("filename: " + file + "\t" + tempslave.slaveId);
+						}
+					}
+				}
+			}
+			
 			for (SlaveInfo slave : Scheduler.slavePool.values()) {
 				try {
 					System.out.println("cur slave is " + slave.slaveId);
@@ -54,6 +70,7 @@ public class MasterHeartBeat extends Thread {
 					
 					
 					
+					
 				} catch (Exception e) {
 					System.out.println("fail to connect the slave : " + slave.slaveId);
 
@@ -83,15 +100,20 @@ public class MasterHeartBeat extends Thread {
 					
 					
 					
-					for(String file : Scheduler.fileLayout.keySet()){
-						for(SlaveInfo slave : Scheduler.fileLayout.get(file)){
-							if(slave.slaveId == i) {
-								//remove from file layout table
-								Scheduler.fileLayout.get(file).remove(slave);
-								
+					synchronized (Scheduler.fileLayout) {
+						synchronized (Scheduler.slavePool){
+							for(String file : Scheduler.fileLayout.keySet()){
+								Iterator it = Scheduler.fileLayout.get(file).iterator();
+								while(it.hasNext()){
+									SlaveInfo slave = (SlaveInfo) it.next();
+									if(slave.slaveId == i) {
+										it.remove();
+									}
+								}
 							}
 						}
 					}
+					
 				}
 				
 				

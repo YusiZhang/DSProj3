@@ -24,7 +24,7 @@ public class WordCountMaper extends Mapper{
 		}
 		
 		try {
-			Thread.sleep(500);
+			Thread.sleep(50);
 			System.out.println("Mapping...");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
