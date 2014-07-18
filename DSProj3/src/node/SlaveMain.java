@@ -36,8 +36,8 @@ public class SlaveMain {
 				System.out.println("Some wrong with put message " + e.toString());
 			}
 			
-			SlaveScheduler slaveHeartBeat = new SlaveScheduler(conf.SlaveHeartBeatPort);
-			slaveHeartBeat.start();
+			SlaveHeartBeat heartBeat = new SlaveHeartBeat();
+			heartBeat.start();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
