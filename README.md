@@ -18,8 +18,8 @@ http://www.eecis.udel.edu/~trnka/CISC370-05J/code/FileSplitter/FileSplitter.java
 
 TODO:
 
-1. Socket will closed when transfering large file.
+1. Socket will closed when transfering large file. √
 
-2. Socket will only receive 2894 bytes at most.
+2. Socket will only receive 2894 bytes at most. √
 
-3. Charactertics could be splitted in the middle of a word
+3. Charactertics could be splitted in the middle of a word - won't do
