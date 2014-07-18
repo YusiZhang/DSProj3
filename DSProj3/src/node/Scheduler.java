@@ -166,29 +166,47 @@ public class Scheduler extends Thread{
 			
 			//inform the client
 			try {
-				Socket socket1 = new Socket(curJob.getAddress(), curJob.getPort());
+//				Socket socket1 = new Socket(curJob.getAddress(), curJob.getPort());
 				
 				System.out.print("Job done successfully! Transfer the job result to the client");
 				//read all reduce result files and send to client!!
 				ArrayList<String> jobResultFiles = new ArrayList<String>();
-				File folder = new File("src/");
+				
+				File folder = new File("./");
 				File[] listOfFiles = folder.listFiles();
+				System.out.println("list of files"+listOfFiles.length);
 				for (File file : listOfFiles) {
-				    if (file.isFile()) {
+//				    if (file.isFile()) {
+				    	
 				    	System.out.println("file in src name is:" +file.getName());
 				    	String[] parts = file.getName().split("_");
-				    	if(parts[0].equals(reducerDoneMsg.task.getJobId())&&parts[2].equals("reduceResult")){
+				    	if(parts.length >= 3 ){
+				    		System.out.println("parts "+parts[0] + " " + parts[1] + " " + parts[2]);
+					    	System.out.println("targs "+reducerDoneMsg.task.getJobId() + " " + parts[1] + " " + "reduceResult0");
+				    	}
+				    	
+				    	if(parts[0].equals(reducerDoneMsg.task.getJobId()+"")&&parts[2].substring(0,12).equals("reduceResult")){
+				    		
+//				    	if (file.getName().equals("0_0_Reduce") || file.getName().equals("0_0_MapResult0") ){
+//				    		if (file.getName().equals("0_0_Reduce") )
+//				    			System.out.println("0_0_Reduce is right");
 				    		//add file name into mapper outputs
 				    		jobResultFiles.add(file.getName());
-				    		System.out.println("Right file!");
+				    		System.out.println("perform reduce Right file!");
 				    	}else {
-				    		System.out.println("Wrong file!");
+				    		System.out.println("perform reduce Wrong file!");
 				    	}
 				    }
-				}
+//				}
+				
+				
+				
+
 				
 //				new Message(Message.MSG_TYPE.JOB_COMP, jobResultFiles).send(socket1);
+				System.out.println(curJob.getAddress() + "  " + MasterMain.conf.ClientMainPort);
 				Socket resultSoc = new Socket(curJob.getAddress(),MasterMain.conf.ClientMainPort);
+//				Socket resultSoc = new Socket("128.237.184.172",15641);
 				new Message(Message.MSG_TYPE.JOB_COMP, jobResultFiles).send(resultSoc);
 				
 				
@@ -201,8 +219,8 @@ public class Scheduler extends Thread{
 
 					Thread.sleep(next * 2000);
 					
-					
-					new FileTransfer.Upload(str, resultSoc);
+					System.out.println("filename : " + str);
+					new FileTransfer.Upload("./"+str, resultSoc).start();
 				}
 				
 				
@@ -323,7 +341,7 @@ public class Scheduler extends Thread{
 			task.setReducerClass(job.getReducerClass());
 			task.setInputFileName(((Integer)job.getJobId()).toString());
 			task.setOutputFileName(job.getOutputFileName());
-			
+			task.setTaskId(job.curTaskId++);
 			//connect to the slave
 			Socket soc;
 			try {

@@ -57,10 +57,10 @@ public class PerformReduce extends Thread {
 		    	
 		    	System.out.println("file in src name is:" +file.getAbsoluteFile());
 		    	String[] parts = file.getName().split("_");
-//		    	if(parts[0].equals(taskInfo.getJobId())&&parts[2].equals("Reduce")){
-		    	if (file.getName().equals("0_0_Reduce") || file.getName().equals("0_0_MapResult0") ){
-		    		if (file.getName().equals("0_0_Reduce") )
-		    			System.out.println("0_0_Reduce is right");
+		    	if(parts[0].equals(taskInfo.getJobId()+"")&&parts[2].equals("Reduce")){
+//		    	if (file.getName().equals("0_0_Reduce") || file.getName().equals("0_0_MapResult0") ){
+//		    		if (file.getName().equals("0_0_Reduce") )
+//		    			System.out.println("0_0_Reduce is right");
 		    		//add file name into mapper outputs
 		    		mapperOutputs.add(file.getName());
 		    		System.out.println("perform reduce Right file!");
