@@ -10,12 +10,19 @@ import config.ParseConfig;
 
 public class MasterHeartBeat extends Thread {
 	public void run() {
+//		try {
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		System.out.println("start the heart beat thread on master");
 		
 		ParseConfig conf = MasterMain.conf;
 		ArrayList<Task> killtasks = new ArrayList<Task>();
 		while (true) {		
 			System.out.println("entering true loop!!");
+			System.out.println("slavePool size " + Scheduler.slavePool.size());
 			for (SlaveInfo slave : Scheduler.slavePool.values()) {
 				try {
 					System.out.println("cur slave is " + slave.slaveId);
@@ -33,8 +40,8 @@ public class MasterHeartBeat extends Thread {
 					killtasks.clear();
 					
 					//send heartbeat msg
-					Message msg = new Message(Message.MSG_TYPE.KEEP_ALIVE, null);
-					Socket socket = new Socket(slave.address,conf.SlaveMainPort);
+					Message msg = new Message(Message.MSG_TYPE.KEEP_ALIVE, "");
+					Socket socket = new Socket(slave.address,conf.SlaveHeartBeatPort);
 					System.out.println("try to connect slave and send KEEP_ALIVE msg");
 					msg.send(socket);
 					System.out.println("send heart beat to slave");
