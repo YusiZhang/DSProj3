@@ -37,8 +37,10 @@ public class SlaveScheduler extends Thread {
 	public void run() {
 
 		while (true) {
+			System.out.println("slave is listening "+listener.getLocalSocketAddress()+listener.getLocalPort());
 
 			try {
+				
 				socket = listener.accept();
 				msg = Message.receive(socket);
 				System.out.println("the scheduler receives a " + msg.getType()

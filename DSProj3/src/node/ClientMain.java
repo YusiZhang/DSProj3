@@ -39,11 +39,10 @@ public class ClientMain{
 		CMD cmd_type = null;
 
 		// connect to master.
-		Socket socket = null;
+		
 		try {
 			new ParseConfig(args[0]);
-			socket = new Socket(ParseConfig.MasterIP,
-					ParseConfig.MasterMainPort);
+			
 		} catch (Exception e) {
 			System.out.println(e.toString());
 		}
@@ -55,9 +54,17 @@ public class ClientMain{
 		// accept cmd from console
 		switch (CMD.valueOf(completecmd)) {
 		case put:
-			System.out.println("Please input filename");
-			String name = scanner.nextLine();
-			putFileHandler(socket, name);
+			try {
+				Socket socket = new Socket(ParseConfig.MasterIP,ParseConfig.MasterMainPort);
+				System.out.println("Please input filename");
+				String name = scanner.nextLine();
+				putFileHandler(socket, name);
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 
 			break;
 		case get:
@@ -85,7 +92,7 @@ public class ClientMain{
 			requestDownload.send(socket);
 			Thread.sleep(500);
 			new FileTransfer.Download(name, socket, ParseConfig.ChunkSize).start();
-			BufferedReader br = new BufferedReader(new FileReader(name));
+			BufferedReader br = new BufferedReader(new FileReader("./"+name));
 			String line;
 			int count = 0;
 			System.out.println("Here are first 5 lines of file" + name);
