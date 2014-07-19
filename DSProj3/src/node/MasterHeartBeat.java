@@ -59,7 +59,7 @@ public class MasterHeartBeat extends Thread {
 						Message msgKill = new Message(Message.MSG_TYPE.KILL, killtasks);
 						Socket socketKill = new Socket(slave.address,conf.SlaveMainPort);
 						msgKill.send(socketKill);
-						System.out.println("send kill message");
+//						System.out.println("send kill message");
 						for(Task t : killtasks) {
 							System.out.println("Ideally connect with " + t.getAddress());
 							Socket socketRestart = new Socket(t.getAddress(),MasterMain.conf.ClientMainPort);

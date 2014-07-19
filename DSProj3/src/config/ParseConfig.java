@@ -3,12 +3,13 @@ package config;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Serializable;
 import java.util.HashMap;
 
 /*
  * 1. parse config file 
  */
-public class ParseConfig {
+public class ParseConfig implements Serializable{
 	
 	//the port the master listening on
 	public static int MasterMainPort;

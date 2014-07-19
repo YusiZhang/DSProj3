@@ -56,6 +56,7 @@ public class Scheduler extends Thread{
 	public void run() {
 		
 		while(true) {
+			System.out.println("i am listening "+listener.getLocalSocketAddress()+listener.getLocalPort());
 			Socket socket = null;
 			Message msg = null;
 			ParseConfig conf = null;
@@ -149,6 +150,7 @@ public class Scheduler extends Thread{
 			}
 			case GETFILE:
 				getFileHandler(msg,socket);
+				break;
 			default:
 				break;
 			}
@@ -161,8 +163,16 @@ public class Scheduler extends Thread{
 		try {
 			FileInfo info = (FileInfo) msg.getContent();
 			SlaveInfo slave = slavePool.get(info.slaveInfo.slaveId);
-			Message reply = new Message(null,slave);
-			reply.send(socket);
+			if(slave == null) {
+				Message reply = new Message(null,"No Such files");
+				reply.send(socket);
+				socket.close();
+			}else {
+				Message reply = new Message(null,slave);
+				reply.send(socket);
+				socket.close();
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
