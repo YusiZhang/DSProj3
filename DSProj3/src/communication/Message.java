@@ -52,6 +52,8 @@ public class Message implements Serializable{
 		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 		out.writeObject(this);
 		out.flush();
+		out.reset();
+//		out.close();
 		System.out.println("Sending " + this.getType() + " / "+this.getContent().toString() + " to " + soc.getRemoteSocketAddress());
 	}
 	
@@ -61,8 +63,11 @@ public class Message implements Serializable{
 	public static Message receive(Socket soc) throws ClassNotFoundException, Exception {
 		Message msg = null;
 		Socket socket = soc;
+		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+		out.flush();
 		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 		msg = (Message)in.readObject();
+		
 		System.out.println("Receiving " +  msg.getType() + " / "+msg.getContent().toString() + " from " + soc.getRemoteSocketAddress());
 		return msg;
 	}

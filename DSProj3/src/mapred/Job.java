@@ -112,7 +112,7 @@ public class Job implements Serializable{
 				Socket resultSoc = listener.accept();
 				System.out.println("Soc received!! " + resultSoc.getRemoteSocketAddress());	
 				msg = Message.receive(resultSoc);
-				handleMsgFromMaster(msg,resultSoc);
+				handleMsgFromMaster(msg,socket);
 			}
 			
 			//closes the socket
@@ -144,8 +144,11 @@ public class Job implements Serializable{
 //				this.waitForCompletion(this.configName);
 //				listener.close();
 				this.jobId++;
-				msg = new Message(Message.MSG_TYPE.NEW_JOB,this);
-				msg.send(socket);
+//				Socket socket2 = new Socket(conf.MasterIP, conf.MasterMainPort);
+//				System.out.println("submitting ..."+this.getMapperClass());
+				Message msg2 = new Message(Message.MSG_TYPE.NEW_JOB,this);
+				Thread.sleep(3000);
+				msg2.send(socket);
 //				throw new Exception("restart");
 				break;
 			

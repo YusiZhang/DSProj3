@@ -39,11 +39,10 @@ public class ClientMain{
 		CMD cmd_type = null;
 
 		// connect to master.
-		Socket socket = null;
+//		Socket socket = null;
 		try {
 			new ParseConfig(args[0]);
-			socket = new Socket(ParseConfig.MasterIP,
-					ParseConfig.MasterMainPort);
+			
 		} catch (Exception e) {
 			System.out.println(e.toString());
 		}
@@ -55,9 +54,18 @@ public class ClientMain{
 		// accept cmd from console
 		switch (CMD.valueOf(completecmd)) {
 		case put:
-			System.out.println("Please input filename");
-			String name = scanner.nextLine();
-			putFileHandler(socket, name);
+			Socket socket;
+			try {
+				socket = new Socket(ParseConfig.MasterIP,ParseConfig.MasterMainPort);
+				System.out.println("Please input filename");
+				String name = scanner.nextLine();
+				putFileHandler(socket, name);
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 
 			break;
 		case get:
@@ -119,6 +127,7 @@ public class ClientMain{
 			SlaveInfo slave = (SlaveInfo) slaveMsg.getContent();
 			System.out.println("file : " + name + " is on slave id: " + slave.slaveId + "IP: " + slave.address );
 			
+			socket.close();
 			return slave;
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -136,8 +145,7 @@ public class ClientMain{
 
 		try {
 			// split file
-			Splitter splitter = new Splitter(fileName, ParseConfig.ChunkSize,
-					"");
+			Splitter splitter = new Splitter(fileName, ParseConfig.ChunkSize,"");
 			splitter.split();
 			// get file blk nums
 			int blkNums = splitter.fileBlk;

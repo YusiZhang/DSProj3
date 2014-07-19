@@ -49,18 +49,18 @@ public class WordCountExample {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
-			try {
-				
-				job.waitForCompletion(args[0]);
-			} catch (UnknownHostException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			} catch (Exception e1) {
-				System.out.println("I am sorry, I cannot restart myself twice T_T");
-				e1.printStackTrace();
-			}
-			
+//			try {
+//				
+//				job.waitForCompletion(args[0]);
+//			} catch (UnknownHostException e1) {
+//				e1.printStackTrace();
+//			} catch (IOException e1) {
+//				e1.printStackTrace();
+//			} catch (Exception e1) {
+//				System.out.println("I am sorry, I cannot restart myself twice T_T");
+//				e1.printStackTrace();
+//			}
+//			
 			e.printStackTrace();
 		}
 	    
