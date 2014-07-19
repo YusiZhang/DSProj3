@@ -6,7 +6,6 @@ import java.net.UnknownHostException;
 
 import node.ClientMain;
 import config.ParseConfig;
-import mapred.JobConf;
 import mapred.Job;
 //import WordCount.Map;
 //import WordCount.Reduce;

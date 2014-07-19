@@ -21,14 +21,14 @@ import mapred.Mapper;
 import node.SlaveInfo;
 import node.SlaveMain;
 
-public class PerformMap extends Thread{
+public class MapTracker extends Thread{
 	private ArrayList<SlaveInfo> reducersList;
 	//baseFileName includes blk id
 	private String baseFileName;
 	private String mapperClass;
 	private Task taskInfo;
 	
-	public PerformMap(Task taskInfo){
+	public MapTracker(Task taskInfo){
 		this.taskInfo = taskInfo;
 		this.reducersList= taskInfo.getReduceLists();
 		this.baseFileName = taskInfo.getInputFileName();

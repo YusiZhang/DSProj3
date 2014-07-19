@@ -14,14 +14,11 @@ public class WordCountReducer extends Reducer {
 		for (FixValue val : values) {
 			sum += Integer.parseInt(val.getValue().toString());
 		}
-		context.write(new Text(key.getValue()), new FixValue(sum));
-		
+		context.write(key, new FixValue(sum));
 		
 		try {
 			Thread.sleep(50);
-			System.out.println("Reducing...");
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -26,7 +26,7 @@ import io.Text;
 import io.Writable;
 
 //
-public class PerformReduce extends Thread {
+public class ReduceTracker extends Thread {
 	ArrayList<String> mapperOutputs;
 	ArrayList<String> outputs;
 	ArrayList<KeyValuePair> pairs = new ArrayList<KeyValuePair>();
@@ -47,7 +47,7 @@ public class PerformReduce extends Thread {
 		}
 	}
 
-	public PerformReduce(Task taskInfo){
+	public ReduceTracker(Task taskInfo){
 		this.taskInfo = taskInfo;
 		this.mapperOutputs = new ArrayList<String>();
 		File folder = new File("./");

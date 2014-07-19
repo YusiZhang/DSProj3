@@ -40,7 +40,7 @@ public class MasterMain {
 		
 		//run scheduler, listen on MasterMainPort
 		Scheduler scheduler = new Scheduler(conf.MasterMainPort);
-		System.out.println("start the scheduler on "+conf.MasterMainPort);
+		//System.out.println("start the scheduler on "+conf.MasterMainPort);
 		scheduler.start();
 		
 		MasterHeartBeat heartbeat = new MasterHeartBeat();

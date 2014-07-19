@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import mapred.Job;
-import mapred.PerformMap;
-import mapred.PerformReduce;
+import mapred.MapTracker;
+import mapred.ReduceTracker;
 import mapred.Task;
 import communication.Message;
 import config.ParseConfig;
@@ -37,8 +37,6 @@ public class SlaveScheduler extends Thread {
 	public void run() {
 
 		while (true) {
-			System.out.println("slave is listening "+listener.getLocalSocketAddress()+listener.getLocalPort());
-
 			try {
 				
 				socket = listener.accept();
@@ -118,7 +116,7 @@ public class SlaveScheduler extends Thread {
 	 */
 	private void newReduceHandler(Message msg, Socket socket) {
 		Task task = (Task) msg.getContent();
-		PerformReduce performReduce = new PerformReduce((Task)msg.getContent());  
+		ReduceTracker performReduce = new ReduceTracker((Task)msg.getContent());  
 		
 		if(jobToThread.contains(task.getJobId())){
 			jobToThread.get(task.getJobId()).add(performReduce);
@@ -135,7 +133,7 @@ public class SlaveScheduler extends Thread {
 	 */
 	private void newMapHandler(Message msg, Socket socket) {
 		Task task = (Task) msg.getContent();
-		PerformMap performMap = new PerformMap((Task) msg.getContent()); 
+		MapTracker performMap = new MapTracker((Task) msg.getContent()); 
 		if(jobToThread.contains(task.getJobId())){
 			jobToThread.get(task.getJobId()).add(performMap);
 		} else {
