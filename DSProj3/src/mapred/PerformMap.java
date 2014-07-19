@@ -115,12 +115,18 @@ public class PerformMap extends Thread{
 	 */
 	private void sendFiles() throws Exception {
 		for(int i = 0; i < reducersList.size() ; i++) {
-			Socket soc = new Socket(reducersList.get(i).address,SlaveMain.conf.SlaveMainPort);
-			String downloadFile = this.taskInfo.getJobId()+"_"+this.taskInfo.getTaskId()+"_Reduce";
-			Message msg = new Message(MSG_TYPE.MAPRESULT_TO_REDUCE,downloadFile);
-			msg.send(soc);
-			new FileTransfer.Upload(this.taskInfo.getJobId()+"_"+this.taskInfo.getTaskId()+"_MapResult"+i, soc).start();
-			Thread.sleep(500);
+			if(reducersList.get(i)==null){
+				//indicates this slave is down
+				continue;
+			}else {
+				Socket soc = new Socket(reducersList.get(i).address,SlaveMain.conf.SlaveMainPort);
+				String downloadFile = this.taskInfo.getJobId()+"_"+this.taskInfo.getTaskId()+"_Reduce";
+				Message msg = new Message(MSG_TYPE.MAPRESULT_TO_REDUCE,downloadFile);
+				msg.send(soc);
+				new FileTransfer.Upload(this.taskInfo.getJobId()+"_"+this.taskInfo.getTaskId()+"_MapResult"+i, soc).start();
+				Thread.sleep(500);
+			}
+			
 		}
 	}
 }

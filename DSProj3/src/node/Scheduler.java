@@ -371,19 +371,21 @@ public class Scheduler extends Thread{
 	
 	
 	private void setReduceList(Job job) {
-		for (int i = 0; i < job.getReducerTaskSplits(); i++) {
-			
+//		while(job.getReduceLists().size() < job.getReducerTaskSplits()){
+//			if(slavePool.contains(i)){
+//				job.getReduceLists().add(slavePool.get(i));
+//				i++;
+//			}else {
+//				i++;
+//				if(i>1000){
+//				System.out.println("Sorry...We hard code this...cause we assume there won't be more than 1000 nodes ...");
+//				}
+//			}
+//			
+//		}
+		
+		for(int i = 0 ; i < job.getReducerTaskSplits(); i++) {
 			job.getReduceLists().add(slavePool.get(i));
-			
-			/* 
-			if (!(slavePool.containsKey(i) && failPool.containsKey(i))) {
-				System.out.println("We only have "+ i + " nodes.");
-				break;
-			}
-			else {
-				job.getReduceLists().add(slavePool.get(i));
-			}
-			*/
 		}
 		
 	}
