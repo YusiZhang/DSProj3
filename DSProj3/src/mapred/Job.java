@@ -146,6 +146,7 @@ public class Job implements Serializable{
 //				listener.close();
 				this.jobId++;
 
+				
 				socket.close();
 				Socket socket2 = new Socket(conf.MasterIP,conf.MasterMainPort);
 				msg = new Message(Message.MSG_TYPE.NEW_JOB,this);
