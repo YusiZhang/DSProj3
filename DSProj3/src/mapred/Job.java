@@ -41,6 +41,7 @@ public class Job implements Serializable{
 	private ArrayList<SlaveInfo> reduceLists  = new ArrayList<SlaveInfo>();
 	public HashMap<Text, FixValue> reduceOutputMap = new HashMap<Text, FixValue>();
 //	public ServerSocket listener = null;
+	public ParseConfig conf = null;
 	public Job(){}
 	public Job(String jobName) {
 		this.jobName = jobName;
@@ -86,7 +87,7 @@ public class Job implements Serializable{
 
 	//client calls waitForCompletion to run the job
 	public void waitForCompletion(String config) throws Exception{
-		ParseConfig conf;
+		
 			conf = new ParseConfig(config);
 			this.configName = config;
 			//connect to master
@@ -141,8 +142,10 @@ public class Job implements Serializable{
 //				this.waitForCompletion(this.configName);
 //				listener.close();
 				this.jobId++;
+				socket.close();
+				Socket socket2 = new Socket(conf.MasterIP,conf.MasterMainPort);
 				msg = new Message(Message.MSG_TYPE.NEW_JOB,this);
-				msg.send(socket);
+				msg.send(socket2);
 //				throw new Exception("restart");
 				break;
 			
