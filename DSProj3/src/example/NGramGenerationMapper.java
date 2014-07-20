@@ -1,21 +1,21 @@
 package example;
+import java.util.*;
+import java.util.regex.*;
+
 import io.FixValue;
 import io.LongWritable;
 import io.Text;
 import mapred.Context;
 import mapred.Mapper;
-static class NGramGenerationMapper extends Mapper {
-    private final static IntWritable one = new IntWritable(1);
-    private Text word = new Text();
-    
-    public void map(LongWritable key, Text value, Context context) throws IOException,  InterruptedException {
+public class NGramGenerationMapper extends Mapper {
+	FixValue one = new FixValue(1); 
+    @Override
+    public void map(LongWritable key, Text value, Context context) {
  	
 		for (int i = 0; i < 5; i++) {
 			String strList = handle(value.toString());
 			for (String str : ngrams(i, strList)) {
-				word.set(str);
-				System.out.println(word.toString());
-				context.write(word, one);
+				context.write(new Text(str), one);
 			}
 		}
     }
