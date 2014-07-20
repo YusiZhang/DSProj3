@@ -99,17 +99,13 @@ public class Job implements Serializable{
 			
 			System.out.println("listening... " + conf.ClientMainPort);
 			ServerSocket listener = null;
-//			if(listener != null){
-				System.out.println("HI!!! I restart myself!!!!!!!!!!!!");
-//			}else{
-				
+
 				listener = new ServerSocket(conf.ClientMainPort);
 //			}
 			
 			while(true){
 				
 				Socket resultSoc = listener.accept();
-				System.out.println("Soc received!! " + resultSoc.getRemoteSocketAddress());	
 				msg = Message.receive(resultSoc);
 				handleMsgFromMaster(msg,resultSoc);
 			}

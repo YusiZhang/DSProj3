@@ -48,7 +48,6 @@ public class ParseConfig implements Serializable{
 		String line;
 		
 		while((line = reader.readLine()) != null) {
-			System.out.println(line);
 			int split = line.indexOf("=");
 			if(split != -1) {
 				//put key-value pair from config file to args

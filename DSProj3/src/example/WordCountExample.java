@@ -44,26 +44,25 @@ public class WordCountExample {
 			socket = new Socket(ParseConfig.MasterIP, ParseConfig.MasterMainPort);
 			ClientMain.putFileHandler(socket, job.getInputFileName());
 			job.waitForCompletion(args[0]);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			try {
-				socket = new Socket(ParseConfig.MasterIP, ParseConfig.MasterMainPort);
-				ClientMain.putFileHandler(socket, job.getInputFileName());
-				job.waitForCompletion(args[0]);
-			} catch (UnknownHostException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
+//		} catch (UnknownHostException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (Exception e) {
+//			try {
+//				socket = new Socket(ParseConfig.MasterIP, ParseConfig.MasterMainPort);
+//				ClientMain.putFileHandler(socket, job.getInputFileName());
+//				job.waitForCompletion(args[0]);
+//			} catch (UnknownHostException e1) {
+//				e1.printStackTrace();
+//			} catch (IOException e1) {
+//				e1.printStackTrace();
 			} catch (Exception e1) {
-				System.out.println("I am sorry, I cannot restart myself twice T_T");
 				e1.printStackTrace();
 			}
 			
-			e.printStackTrace();
-		}
+//			e.printStackTrace();
+//		}
 	    
 	    
 	

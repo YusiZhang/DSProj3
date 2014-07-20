@@ -56,7 +56,6 @@ public class Scheduler extends Thread{
 	public void run() {
 		
 		while(true) {
-			System.out.println("i am listening "+listener.getLocalSocketAddress()+listener.getLocalPort());
 			Socket socket = null;
 			Message msg = null;
 			ParseConfig conf = null;
@@ -65,11 +64,10 @@ public class Scheduler extends Thread{
 				conf = MasterMain.conf;
 				msg = Message.receive(socket);
 				
-				System.out.println("the scheduler receives a "+msg.getType()+" messge " + msg.getContent().toString());
+				System.out.println("Receives a "+msg.getType()+" messge: " + msg.getContent().toString());
 				
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("There is no message " + e.toString());
 				continue;
 			}
 			
@@ -83,10 +81,9 @@ public class Scheduler extends Thread{
 			case FILE_PUT_REQ_TO_MASTER:
 				
 				WriteFileMsg writeFileMsg = (WriteFileMsg) msg.getContent(); 
-				System.out.println("name:" + writeFileMsg.fileBaseName +" blk:" + writeFileMsg.fileBlk);
+				System.out.println("Write File: " + writeFileMsg.fileBaseName +" blk:" + writeFileMsg.fileBlk);
 				ArrayList<SlaveInfo> slaveList = null; //slaveList to be sent to client
 				for(int rep = 0; rep <= conf.Replica; rep++) {
-					System.out.println("cur rep is: " + rep);
 					if(slaveList==null) {
 						slaveList = fileLayoutGenerate(slavePool, writeFileMsg,false);
 					}else {
@@ -94,31 +91,8 @@ public class Scheduler extends Thread{
 					}
 					
 				}
-				//console debug
-				System.out.println(msg.getContent().toString() + "files");
-				//generate file layout policy
-				System.out.println("slave list are :");
-				for(SlaveInfo info : slaveList) {
-					
-					System.out.println(info.slaveId);
-				}
+
 				filePutReqToMasterHandler(socket,msg,slaveList);
-				
-				/*
-				 * for testing...
-				 */
-				System.out.println("SlavePool:");
-				for(int i : slavePool.keySet()) {
-					System.out.println("id: " + i + "\t" + slavePool.get(i).address);
-				}
-				System.out.println("File Layout:");
-				for(String fileName : fileLayout.keySet()) {
-					for(SlaveInfo info : fileLayout.get(fileName)){
-						System.out.println("filename: " + fileName + "\t" + info.slaveId);
-					}
-				}
-			
-				
 				break;
 				
 			case NEW_JOB:
@@ -474,6 +448,7 @@ public class Scheduler extends Thread{
 			
 			while (idSet.size() <= writeFileMsg.fileBlk)
 			{
+				System.out.println(slavePool.size());
 			    Integer next = rng.nextInt(slavePool.size());
 //			    if(slavePool.contains(next)){
 			    	 idSet.add(next); //if slave is down, its slave ID will not be used for a while.
@@ -524,7 +499,6 @@ public class Scheduler extends Thread{
 	 * reply client which slaves are to be connected to upload file
 	 */
 	private void filePutReqToMasterHandler(Socket socket, Message msg, ArrayList<SlaveInfo> slaveList) {
-		System.out.println("Message received from " + socket.getRemoteSocketAddress() + " type: FILE_PUT_REQ_TO_MASTER; content: " + msg.getContent().toString());
 		Message reply = new Message(Message.MSG_TYPE.AVAIL_SLAVES, slaveList);
 		
 		//tell the client which slaves are available
@@ -534,9 +508,7 @@ public class Scheduler extends Thread{
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		System.out.println("send the slave list from the master to the client");
-		
-		
+		System.out.println("Send the slave list from the master to the client");
 	}
 
 	/*
@@ -546,7 +518,7 @@ public class Scheduler extends Thread{
 	private void regNewSlaveHandler(Socket socket) {
 		InetAddress address = socket.getInetAddress();
 		SlaveInfo slave = new SlaveInfo(slaveId, address);
-		System.out.println("connect to slave "+slave.slaveId+ " "+ address);
+		System.out.println("Register slave "+slave.slaveId+ " with the IP: "+ address);
 		slavePool.put(slaveId,slave);
 		//notice:put first then add slaveid
 		slaveId++;
