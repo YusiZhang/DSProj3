@@ -17,11 +17,6 @@ public class MasterHeartBeat extends Thread {
 		ParseConfig conf = MasterMain.conf;
 		ArrayList<Task> killtasks = new ArrayList<Task>();
 		while (true) {		
-			System.out.println("entering true loop!!");
-			System.out.println("slavePool size " + Scheduler.slavePool.size());
-			
-			/*for testing....*/
-			System.out.println("/*for testing....*/");
 			synchronized (Scheduler.fileLayout) {
 				synchronized (Scheduler.slavePool){
 					for(String file : Scheduler.fileLayout.keySet()){
@@ -35,17 +30,11 @@ public class MasterHeartBeat extends Thread {
 			}
 			
 			for (SlaveInfo slave : Scheduler.slavePool.values()) {
-				try {
-					System.out.println("cur slave is " + slave.slaveId);
-					
-					
-					
+				try {			
 					//send heartbeat msg
 					Message msg = new Message(Message.MSG_TYPE.KEEP_ALIVE, "");
 					Socket socket = new Socket(slave.address,conf.SlaveHeartBeatPort);
-					System.out.println("try to connect slave and send KEEP_ALIVE msg");
 					msg.send(socket);
-					System.out.println("send heart beat to slave");
 					msg = Message.receive(socket);
 					if (!msg.getType().equals(Message.MSG_TYPE.KEEP_ALIVE)) {
 						
@@ -59,9 +48,7 @@ public class MasterHeartBeat extends Thread {
 						Message msgKill = new Message(Message.MSG_TYPE.KILL, killtasks);
 						Socket socketKill = new Socket(slave.address,conf.SlaveMainPort);
 						msgKill.send(socketKill);
-//						System.out.println("send kill message");
 						for(Task t : killtasks) {
-							System.out.println("Ideally connect with " + t.getAddress());
 							Socket socketRestart = new Socket(t.getAddress(),MasterMain.conf.ClientMainPort);
 							
 							Message jobFail = new Message(Message.MSG_TYPE.JOB_FAIL,t.getJobName()+"");
@@ -70,7 +57,6 @@ public class MasterHeartBeat extends Thread {
 						}
 						killtasks.clear();
 					} catch (Exception e){
-						System.out.println("this is another exception!!!!!!!!!");
 					}
 					
 					
@@ -79,7 +65,7 @@ public class MasterHeartBeat extends Thread {
 					
 					
 				} catch (Exception e) {
-					System.out.println("fail to connect the slave : " + slave.slaveId);
+					System.out.println("fail to connect the z : " + slave.slaveId);
 
 					Scheduler.failPool.put(slave.slaveId, slave);
 					e.printStackTrace();
@@ -96,7 +82,6 @@ public class MasterHeartBeat extends Thread {
 				for (int i: Scheduler.failPool.keySet()) {
 					
 					if(Scheduler.SlaveToTask.get(Scheduler.slavePool.get(i)) == null){
-						System.out.println("There is no task on slave " + i);
 					}else {
 						killtasks.addAll(Scheduler.SlaveToTask.get(Scheduler.slavePool.get(i)));
 					}

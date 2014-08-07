@@ -11,7 +11,7 @@ import java.util.HashMap;
 import debug.Printer;
 import mapred.Context;
 import mapred.Reducer;
-import mapred.PerformReduce.KeyValuePair;
+import mapred.ReduceTracker.KeyValuePair;
 import mapred.Task;
 
 

@@ -39,7 +39,6 @@ public class FileTransfer {
 				
 				myFile = new File(fileName);
 				mybytearray = new byte[(int) myFile.length()];
-				System.out.println(mybytearray.length);
 				outToClient = new BufferedOutputStream(socket.getOutputStream());
 				fis = new FileInputStream(myFile);
 				BufferedInputStream bis = new BufferedInputStream(fis);
@@ -48,7 +47,7 @@ public class FileTransfer {
                 outToClient.flush();
                 outToClient.close();
 //			    this.socket.close();
-			    System.out.println("Upload successed!" + fileName);
+			    System.out.println("Upload succeed!" + fileName);
 			    
 				
 				/*
@@ -107,11 +106,10 @@ public class FileTransfer {
 				System.out.println(fileName);
 				while(is.read() != -1) {
 					int bytesRead = is.read(mybytearray, 0, mybytearray.length);
-					System.out.println(bytesRead);
 					bos.write(mybytearray, 0, bytesRead);
 				}
 				
-				
+				System.out.println("Download succeed!" + fileName);
 				
 				
 			    bos.close();

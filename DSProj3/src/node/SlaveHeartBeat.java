@@ -41,7 +41,6 @@ public class SlaveHeartBeat extends Thread {
 				Message reply = new Message(Message.MSG_TYPE.KEEP_ALIVE, "Slave is alive");
 				try {
 					reply.send(socket);
-					System.out.println("respond to master heart beat");
 					
 				} catch (Exception e) {
 					System.out.println("fail to respond to heart beat");

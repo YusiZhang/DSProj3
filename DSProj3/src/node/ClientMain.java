@@ -48,7 +48,7 @@ public class ClientMain{
 		}
 
 		Scanner scanner = new Scanner(new InputStreamReader(System.in));
-		System.out.println("Enter your cmd ");
+		System.out.println("Enter your command: ");
 		String completecmd = scanner.nextLine();
 
 		// accept cmd from console
@@ -56,7 +56,7 @@ public class ClientMain{
 		case put:
 			try {
 				Socket socket = new Socket(ParseConfig.MasterIP,ParseConfig.MasterMainPort);
-				System.out.println("Please input filename");
+				System.out.println("Please input filename:");
 				String name = scanner.nextLine();
 				putFileHandler(socket, name);
 			} catch (UnknownHostException e) {
