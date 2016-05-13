@@ -1,5 +1,6 @@
 DSProj3
 See PDF in the project
+Basically it is a mini/student practice version of hadoop: HDFS + MapReduce
 =======
 
 MapReduce
